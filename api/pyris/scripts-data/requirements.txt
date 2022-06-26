@@ -1,0 +1,9 @@
+xlrd==1.2.0
+pandas==0.24.2
+Fiona==1.8.6
+pyproj==2.6.1
+daiquiri==1.5.0
+csvkit==1.0.4
+addok==1.0.2
+addok-fr==1.0.1
+addok-france==1.1.0

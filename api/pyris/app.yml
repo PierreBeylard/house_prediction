@@ -1,0 +1,29 @@
+flask:
+    PROPAGATE_EXCEPTIONS: True
+    DEBUG: True
+    LOG_LEVEL: debug
+    ERROR_INCLUDE_MESSAGE: False
+    FORCE_SWAGGER_JSON_HTTPS: False
+
+database:
+    DBNAME: pyris
+    USER: postgres
+    HOST: localhost
+    PASSWORD: secret
+
+geocoder:
+  url: http://api-adresse.data.gouv.fr
+
+uwsgi:
+    master: true
+    pythonpath: ~/src/pyris
+    socket: localhost:8855
+    module: pyris.api.wsgi:app
+    processes: 1
+    enable-threads: true
+    protocol: uwsgi
+    need-app: true
+    catch: exceptions=true
+    touch: reload=~/pyris-app.reload
+    daemonize: /var/log/uwsgi/app/pyris.log
+    env: PYRIS_APP_SETTINGS=~/src/pyris/app.yml
