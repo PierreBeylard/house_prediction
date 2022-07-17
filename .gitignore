@@ -5,3 +5,4 @@ __pycache__
 /api/pyris/scripts-data/download
 /api/pyris/scripts-data/data  
 /api/ban  
+/notebooks/creation_enrichissement_db.ipynb
