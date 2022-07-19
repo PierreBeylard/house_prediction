@@ -12,11 +12,17 @@ class get_data:
         self.chunksize = chunksize
 
 
-    def read_csv(self,filtering_column ='Code type local', filter=1):
-        """ pass option on which column to filter and filter value"""
-        iter_csv = pd.read_csv(self.path,sep=self.sep,iterator =True,chunksize = self.chunksize, low_memory = False)
-        self.df = pd.concat(
-            [chunk[chunk[filtering_column] == filter] for chunk in iter_csv])
+    def read_csv(self, filtering_column='Code type local', filter=1):
+        """ pass option on which column to filter and filter value
+        if several filter value, pass the as a list"""
+        iter_csv = pd.read_csv(self.path,
+                               sep=self.sep,
+                               iterator=True,
+                               chunksize=self.chunksize,
+                               low_memory=False)
+        self.df = pd.concat([
+            chunk[chunk[filtering_column].isin(filter)] for chunk in iter_csv
+        ])
         return self.df
 
     def enrichissement_coordinates(self,df):
