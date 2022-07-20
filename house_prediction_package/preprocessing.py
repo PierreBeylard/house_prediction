@@ -1,4 +1,7 @@
 from house_prediction_package.data import get_data
+import pandas as pd
+import numpy as np
+from datetime import datetime
 from more_itertools import chunked
 
 class preprocessing :
@@ -24,6 +27,21 @@ class preprocessing :
         self.df= self.df.drop(columns_to_drop,axis=1)
         # suppression of nan value on target variable
         self.df= self.df.dropna(subset='Valeur fonciere')
+        # pre processing avant groupby mais attention sortir valeures foncieres avant de mettre en POO
+        ob_columns= self.df.dtypes[self.df.dtypes == 'O'].index
+        num_columns= self.df.dtypes[self.df.dtypes == ''].index
+        for column in ob_columns :
+            self.df[column]=self.df[column].replace(np.nan,'',regex=True)
+        #à adapter in v2
+        self.df[[
+                'Surface terrain', 'Surface reelle bati',
+                'Nombre pieces principales', 'Surface Carrez du 1er lot'
+        ]] = self.df[[
+                'Surface terrain', 'Surface reelle bati',
+                'Nombre pieces principales', 'Surface Carrez du 1er lot'
+            ]].apply(pd.to_numeric, errors='coerce')
+        #drop duplicates
+        #self.df = self.df.drop_duplicates().reset_index(drop= True)
         # by returning self, we can do method chaining like preprocessing(df).clean_columns().create_identifier()
         return self
 
@@ -55,4 +73,39 @@ class preprocessing :
             "clean_code_departement", "clean_code_commune",
             "clean_prefixe_de_section", "clean_section", "clean_no_plan"
         ], axis = 1)
+        return self
+
+    def aggregate_transactions(self):
+        self.df = self.df.groupby(["parcelle_cad_section","Date mutation","Valeur fonciere"], as_index= False).apply(lambda x : pd.Series({
+            'B_T_Q' : x['B/T/Q'].max()
+            ,'type_de_voie': x['Type de voie'].max()
+            ,'voie': x['Voie'].max()
+            ,'code_postal': x['Code postal'].max()
+            ,'commune': max(x['Commune'])
+            ,'clean_code_departement': x['clean_code_departement'].max()
+            ,'clean_code_commune': max(x['clean_code_commune'])
+            ,'surface_carrez_lot_1' :  x['Surface Carrez du 1er lot'].sum()/(x['Surface reelle bati'].count()/(x['Surface reelle bati'].count()/x['Nature culture'].nunique()))
+            ,'Nb_lots': x[('Nombre de lots')].max()
+            ,'surface_terrain' : x['Surface terrain'].sum()/(x['Surface terrain'].count()/x['Surface terrain'].nunique()) if int(x['Surface terrain'].nunique()) > 1 and int(x['Nature culture'].nunique()) >1 else x['Surface terrain'].max()
+            ,'surface_reelle_bati' : x['Surface reelle bati'].sum()/(x['Surface reelle bati'].count()/(x['Surface reelle bati'].count()/x['Nature culture'].nunique()))
+            ,'nb_pieces_principales' : x['Nombre pieces principales'].sum()/(x['Nombre pieces principales'].count()/(x['Surface reelle bati'].count()/x['Nature culture'].nunique()))
+            ,'dependance' : x['Type local'].unique()
+            ,'main_type_terrain' : x['Nature culture'].max()
+            ,'parcelle_cadastrale': x['parcelle_cadastrale'].max()}))
+        #drop rows with only dependances transactions as we focus on houses
+        self.df = self.df[self.df.dependance.apply(lambda x: x.all() != 'Dépendance')].reset_index(drop=True)
+        return self.df
+
+    # to do : function calling enrichissement from data
+
+    def feature_generation (self):
+        # convert the 'Date' column to datetime format
+        self.df['Date_YYYY-MM'] = pd.to_datetime(
+            self.df['Date mutation']).dt.to_period('M')
+        self.df= self.df.drop(['Date mutation'], axis = 1)
+        ## attention à ne faire qu'après avoir enrichi avec variables insee
+        dict_type_voie = dict()
+        for value in self.df['Type de voie'].value_counts()[self.df['Type de voie'].value_counts()<300 ].index.values :
+            dict_type_voie[value] = 'Autres'
+        self.df=self.df.replace({'type_voie' : dict_type_voie}).rename(columns = {'Type de voie':'type_voie'})
         return self.df
