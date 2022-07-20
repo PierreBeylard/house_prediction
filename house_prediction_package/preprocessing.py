@@ -70,7 +70,6 @@ class preprocessing :
             "clean_section", "clean_no_plan"]].apply(lambda x: "".join(x), axis=1)
         self.df["parcelle_cad_section"]=self.df["parcelle_cadastrale"].str[:10]
         self.df = self.df.drop([
-            "clean_code_departement", "clean_code_commune",
             "clean_prefixe_de_section", "clean_section", "clean_no_plan"
         ], axis = 1)
         return self
@@ -94,18 +93,21 @@ class preprocessing :
             ,'parcelle_cadastrale': x['parcelle_cadastrale'].max()}))
         #drop rows with only dependances transactions as we focus on houses
         self.df = self.df[self.df.dependance.apply(lambda x: x.all() != 'Dépendance')].reset_index(drop=True)
+        self.df[['Maison',
+                 'Dependance']] = pd.DataFrame(self.dependance.tolist(), index = self.df.index)
         return self.df
 
     # to do : function calling enrichissement from data
 
+
     def feature_generation (self):
         # convert the 'Date' column to datetime format
         self.df['Date_YYYY-MM'] = pd.to_datetime(
-            self.df['Date mutation']).dt.to_period('M')
+            self.df['Date mutation'],format="%d/%m/%Y").dt.to_period('M')
         self.df= self.df.drop(['Date mutation'], axis = 1)
         ## attention à ne faire qu'après avoir enrichi avec variables insee
         dict_type_voie = dict()
-        for value in self.df['Type de voie'].value_counts()[self.df['Type de voie'].value_counts()<300 ].index.values :
+        for value in self.df['type_de_voie'].value_counts()[self.df['type_de_voie'].value_counts()<300 ].index.values :
             dict_type_voie[value] = 'Autres'
-        self.df=self.df.replace({'type_voie' : dict_type_voie}).rename(columns = {'Type de voie':'type_voie'})
+        self.df=self.df.replace({'type_voie' : dict_type_voie})
         return self.df
