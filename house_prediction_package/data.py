@@ -27,3 +27,9 @@ class get_data:
 
     def enrichissement_coordinates(self,df):
         pass
+
+    def enrichissement_insee(self,df):
+        pass
+
+    def loading_data_db (self,df):
+        pass
