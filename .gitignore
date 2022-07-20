@@ -6,3 +6,4 @@ __pycache__
 /api/pyris/scripts-data/data
 /api/ban
 /notebooks/creation_enrichissement_db.ipynb
+/notebooks/aggregatedfile.csv
