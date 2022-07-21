@@ -1,6 +1,6 @@
 import pandas as pd
 
-class get_data:
+class GetData:
     """ Read data from csv and load it in a dataframe
     accepted arguments : path to file , separator, chunksize and filter
     option to load csv by filtering on house type
