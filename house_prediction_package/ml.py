@@ -12,7 +12,7 @@ class ML:
         self.df = GetData().read_csv()
         self.X_train, self.X_test, self.y_train, self.y_test = Preprocessing(
         ).select_x_y()
-        self.reg = PipelineClass().creation_pipeline()
+        self.reg = Pipeline().pipeline()
 
     def model_fitting(self):
         fitted_model = self.reg.fit(self.X_train, self.y_train)
