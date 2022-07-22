@@ -12,7 +12,7 @@ class GetData:
         self.chunksize = chunksize
 
 
-    def read_csv(self, filtering_column='Code type local', filter=1):
+    def read_csv(self, filtering_column='Code type local', filter=[1]):
         """ pass option on which column to filter and filter value
         if several filter value, pass the as a list"""
         iter_csv = pd.read_csv(self.path,

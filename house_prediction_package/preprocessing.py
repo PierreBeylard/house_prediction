@@ -36,17 +36,16 @@ class Preprocessing :
         self.df= self.df.dropna(subset=['Valeur fonciere'])
         # pre processing avant groupby mais attention sortir valeures foncieres avant de mettre en POO
         ob_columns= self.df.dtypes[self.df.dtypes == 'O'].index
-        num_columns= self.df.dtypes[self.df.dtypes == ''].index
+        num_columns = self.df.dtypes[(self.df.dtypes == 'int')
+                                     | (self.df.dtypes == 'float')].index
+        non_num_col = ['No disposition', 'No voie', 'Code postal', 'Code commune',
+        'Prefixe de section', 'No plan','Code type local']
+        num_columns = [value for value in num_columns if value not in non_num_col]
         for column in ob_columns :
             self.df[column]=self.df[column].replace(np.nan,'',regex=True)
         #à adapter in v2
-        self.df[[
-                'Surface terrain', 'Surface reelle bati',
-                'Nombre pieces principales', 'Surface Carrez du 1er lot'
-        ]] = self.df[[
-                'Surface terrain', 'Surface reelle bati',
-                'Nombre pieces principales', 'Surface Carrez du 1er lot'
-            ]].apply(pd.to_numeric, errors='coerce')
+        self.df[num_columns] = self.df[num_columns].apply(pd.to_numeric,
+                                                              errors='coerce')
         #drop duplicates
         #self.df = self.df.drop_duplicates().reset_index(drop= True)
         # by returning self, we can do method chaining like preprocessing(df).clean_columns().create_identifier()
@@ -90,11 +89,11 @@ class Preprocessing :
             ,"commune": max(x["Commune"])
             ,"clean_code_departement": x["clean_code_departement"].max()
             ,"clean_code_commune": max(x["clean_code_commune"])
-            ,"surface_carrez_lot_1" :  x["Surface Carrez du 1er lot"].sum()/(x["Surface reelle bati"].count()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
-            ,"Nb_lots": x[("Nombre de lots")].max()
-            ,"surface_terrain" : x["Surface terrain"].sum()/(x["Surface terrain"].count()/x["Surface terrain"].nunique()) if int(x["Surface terrain"].nunique()) > 1 and int(x["Nature culture"].nunique()) >1 else x["Surface terrain"].max()
-            ,"surface_reelle_bati" : x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
-            ,"nb_pieces_principales" : x["Nombre pieces principales"].sum()/(x["Nombre pieces principales"].count()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
+            ,"surface_carrez_lot_1" :  x["Surface Carrez du 1er lot"].sum()/((x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
+            ,"Nb_lots": x["Nombre de lots"].max()
+            ,"surface_terrain" : lambda x:  x["Surface terrain"].sum()/(x["Surface terrain"].count()/x["Surface terrain"].nunique()) if int(x["Surface terrain"].nunique()) > 1 and int(x["Nature culture"].nunique()) >1 else x["Surface terrain"]
+            ,"surface_reelle_bati" : lambda x:  x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Surface reelle bati"].sum()
+            ,"nb_pieces_principales" : lambda x:  x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum()
             ,"dependance" : x["Type local"].unique()
             ,"main_type_terrain" : x["Nature culture"].max()
             ,"parcelle_cadastrale": x["parcelle_cadastrale"].max()}))
@@ -134,7 +133,9 @@ class Preprocessing :
                 for value in self.df["Valeur fonciere"]]
         self.df["zscores"]= zscores
         # absolute value of zscore and if sup x then 1  :
-        self.df["outlier"] = (abs(self.df["zscores"])>3).astype(int)
+        self.df["outlier"] = [
+            1 if (abs(value) > 3) else 0 for value in self.df["zscores"]
+        ]
         self.df=self.df[self.df["outlier"] == 0].reset_index(drop=True)
         self.df = self.df.drop(["zscores","outlier"], axis = 1)
         return self
