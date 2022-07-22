@@ -91,9 +91,9 @@ class Preprocessing :
             ,"clean_code_commune": max(x["clean_code_commune"])
             ,"surface_carrez_lot_1" :  x["Surface Carrez du 1er lot"].sum()/((x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
             ,"Nb_lots": x["Nombre de lots"].max()
-            ,"surface_terrain" : lambda x:  x["Surface terrain"].sum()/(x["Surface terrain"].count()/x["Surface terrain"].nunique()) if int(x["Surface terrain"].nunique()) > 1 and int(x["Nature culture"].nunique()) >1 else x["Surface terrain"]
-            ,"surface_reelle_bati" : lambda x:  x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Surface reelle bati"].sum()
-            ,"nb_pieces_principales" : lambda x:  x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum()
+            ,"surface_terrain" : (x["Surface terrain"].sum()/(x["Surface terrain"].count()/x["Surface terrain"].nunique()) if int(x["Surface terrain"].nunique()) > 1 and int(x["Nature culture"].nunique()) >1 else x["Surface terrain"])
+            ,"surface_reelle_bati" : (x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Surface reelle bati"].sum())
+            ,"nb_pieces_principales" : (x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Nature culture"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum())
             ,"dependance" : x["Type local"].unique()
             ,"main_type_terrain" : x["Nature culture"].max()
             ,"parcelle_cadastrale": x["parcelle_cadastrale"].max()}))
