@@ -7,3 +7,4 @@ __pycache__
 /api/ban
 /notebooks/creation_enrichissement_db.ipynb
 /notebooks/aggregatedfile.csv
+/notebooks/house_model_wo_aggregations.sav
