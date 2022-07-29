@@ -7,9 +7,8 @@ from scipy import stats
 
 from sklearn.model_selection import train_test_split
 #sans doute à supprimer au lancement final du modele
-from locale import atof, setlocale, LC_NUMERIC, LC_ALL
-
-setlocale(LC_ALL, 'fr_FR.UTF-8')
+#from locale import atof, setlocale, LC_NUMERIC, LC_ALL
+#setlocale(LC_ALL, 'fr_FR.UTF-8')
 
 class Preprocessing :
 
@@ -32,6 +31,16 @@ class Preprocessing :
         # suppression of columns poorly completed
         columns_to_drop = [column for column in self.df.columns if ((self.df[column].isnull().value_counts().sort_index()[0]/self.df.shape[0])*100) < 2 ]
         self.df= self.df.drop(columns_to_drop,axis=1)
+        # replacement of , by . in numerical variables & deletion of non numrical caracters in num columns :
+        columns_num = [
+            'Valeur fonciere', 'Surface Carrez du 1er lot', 'Nombre de lots',
+            'Surface reelle bati', 'Nombre pieces principales',
+            'Surface terrain'
+        ]
+        for column in columns_num:
+            self.df[column] = self.df[column].apply(
+                lambda s: s.replace(",", ".") if isinstance(s, str) else s)
+            self.df[column] = pd.to_numeric(self.df[column], errors='coerce')
         # suppression of nan value on target variable
         self.df= self.df.dropna(subset=['Valeur fonciere'])
         # pre processing avant groupby mais attention sortir valeures foncieres avant de mettre en POO
@@ -81,22 +90,52 @@ class Preprocessing :
         return self
 
     def aggregate_transactions(self):
-        self.df = self.df.groupby(["parcelle_cad_section","Date mutation","Valeur fonciere"], as_index= False).apply(lambda x : pd.Series({
-            "B_T_Q" : x["B/T/Q"].max()
-            ,"type_de_voie": x["Type de voie"].max()
-            ,"voie": x["Voie"].max()
-            ,"code_postal": x["Code postal"].max()
-            ,"commune": max(x["Commune"])
-            ,"clean_code_departement": x["clean_code_departement"].max()
-            ,"clean_code_commune": max(x["clean_code_commune"])
-            ,"surface_carrez_lot_1" :  (x["Surface Carrez du 1er lot"]/(x["Surface Carrez du 1er lot"].count()/x["Type local"].nunique()) if (int(x["Nature culture"].nunique() > 1)) else x["Surface Carrez du 1er lot"].sum())
-            ,"Nb_lots": x["Nombre de lots"].max()
-            ,"surface_terrain" : ((x["Surface terrain"].sum()/x["Surface reelle bati"].count()) if (int(x["Surface terrain"].nunique()) ==1 and int(x["Nature culture"].nunique()) == 1 )else x["Surface terrain"].sum())
-            ,"surface_reelle_bati" : (x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if (int(x["Nature culture"].nunique() > 1)) else x["Surface reelle bati"].sum())
-            ,"nb_pieces_principales" : (x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum())
-            ,"dependance" : x["Type local"].unique()
-            ,"main_type_terrain" : x["Nature culture"].max()
-            ,"parcelle_cadastrale": x["parcelle_cadastrale"].max()}))
+        self.df = self.df.groupby(
+            ["parcelle_cad_section", "Date mutation", "Valeur fonciere"],
+            as_index=False).apply(lambda x: pd.Series({
+                "num_voie":
+                x["No voie"].max(),
+                "B_T_Q":
+                x["B/T/Q"].max(),
+                "type_de_voie":
+                x["Type de voie"].max(),
+                "voie":
+                x["Voie"].max(),
+                "code_postal":
+                x["Code postal"].max(),
+                "commune":
+                max(x["Commune"]),
+                "clean_code_departement":
+                x["clean_code_departement"].max(),
+                "clean_code_commune":
+                max(x["clean_code_commune"]),
+                "surface_carrez_lot_1": (x["Surface Carrez du 1er lot"] / (
+                    x["Surface Carrez du 1er lot"].count() / x["Type local"].
+                    nunique()) if (int(x["Nature culture"].nunique() > 1)) else
+                                         x["Surface Carrez du 1er lot"].sum()),
+                "Nb_lots":
+                x["Nombre de lots"].max(),
+                "surface_terrain":
+                ((x["Surface terrain"].sum() / x["Surface reelle bati"].count(
+                )) if (int(x["Surface terrain"].
+                           nunique()) == 1 and int(x["Nature culture"].nunique(
+                           )) == 1) else x["Surface terrain"].sum()),
+                "surface_reelle_bati": (x["Surface reelle bati"].sum() / (
+                    x["Surface reelle bati"].count() / x["Type local"].nunique(
+                    )) if (int(x["Nature culture"].nunique() > 1)) else x[
+                        "Surface reelle bati"].sum()),
+                "nb_pieces_principales": (x["Nombre pieces principales"].sum(
+                ) / (x["Surface reelle bati"].count() / x["Type local"].
+                     nunique()) if int(x["Nature culture"].nunique(
+                     )) > 1 else x["Nombre pieces principales"].sum()),
+                "dependance":
+                x["Type local"].unique(),
+                "main_type_terrain":
+                x["Nature culture"].max(),
+                "parcelle_cadastrale":
+                x["parcelle_cadastrale"].max()
+            }))
+        self.df = self.df.replace(np.inf, np.nan)
         #drop rows with only dependances transactions as we focus on houses
         self.df = self.df[self.df.dependance.apply(
             lambda x: x.all() != "Dépendance")].reset_index(drop=True)
