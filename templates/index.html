@@ -56,6 +56,7 @@
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="../static/logo.PNG" alt="" width="120" height="95">
         <h2> Formulaire d'évaluation</h2>
+        <p> {{data.page}}</p>
         <p class="lead">Merci de remplir les champs ci dessous pour que nous évaluions la valeur du bien. Tous les champs sont obligatoires.</p>
       </div>
 
@@ -222,11 +223,11 @@
               <div class="my-3">
                 <h4 class="mb-3">Le bien a-t-il une dépendance ?</h4>
                 <div class="form-check">
-                  <input id="HasDependance" name="Dependance" type="radio" class="form-check-input" checked required>
+                  <input id="HasDependance" name="Dependance" type="radio" class="form-check-input"  required>
                   <label class="form-check-label" for="HasDependance"> Oui</label>
                 </div>
                 <div class="form-check">
-                  <input id="NoDependance" name="Dependance" type="radio" class="form-check-input" required>
+                  <input id="NoDependance" name="Dependance" type="radio" class="form-check-input" checked required>
                   <label class="form-check-label" for="NoDependance">Non</label>
                 </div>
               </div>
@@ -234,7 +235,7 @@
 
             <hr class="my-4">
 
-            <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+            <button class="w-100 btn btn-primary btn-lg" type="submit"> Obtain evaluation result</button>
           </form>
         </div>
       </div>
@@ -255,7 +256,8 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
 
-  <script src="form-validation.js"></script>
+  <!--  <script src="form-validation.js"> </script> -->
+    <!-- <script src = "templates/form-validation.js">  </script> -->
 </body>
 
 </html>
