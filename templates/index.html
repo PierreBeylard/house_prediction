@@ -56,8 +56,9 @@
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="../static/logo.PNG" alt="" width="120" height="95">
         <h2> Formulaire d'évaluation</h2>
-        <p> {{data.page}}</p>
+
         <p class="lead">Merci de remplir les champs ci dessous pour que nous évaluions la valeur du bien. Tous les champs sont obligatoires.</p>
+
       </div>
 
       <div class="row g-5">
@@ -111,11 +112,11 @@
         <!-- en mettant col-md12 et col-lg12 la taille s'adaptera en fonction de l'écrant utilisé (ici même reglage) -->
         <div class="col-md-12 col-lg-12">
           <h4 class="mb-3">Information demandeur et adresse du bien </h4>
-          <form class="needs-validation" novalidate>
+          <form class="needs-validation" novalidate id="MainForm" method="POST">
             <div class="row g-3">
               <div class="col-sm-6">
                 <label for="firstName" class="form-label">Prénom</label>
-                <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                <input type="text" class="form-control" id="firstName" placeholder="" value="" required name="nom">
                 <div class="invalid-feedback">
                   Merci de remplir votre prénom.
                 </div>
@@ -123,7 +124,7 @@
 
               <div class="col-sm-6">
                 <label for="lastName" class="form-label">Nom de famille</label>
-                <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                <input type="text" class="form-control" id="lastName" placeholder="" value="" required name="prenom">
                 <div class="invalid-feedback">
                   Merci de remplir votre nom de famille.
                 </div>
@@ -133,7 +134,7 @@
                 <label for="username" class="form-label">Email</label>
                 <div class="input-group has-validation">
                   <span class="input-group-text">@</span>
-                  <input type="text" class="form-control" id="username" placeholder="Email" required>
+                  <input type="text" class="form-control" id="username" placeholder="Email" required name="email">
                   <div class="invalid-feedback">
                     Merci de remplir votre Email.
                   </div>
@@ -150,7 +151,7 @@
 
               <div class="col-12">
                 <label for="address" class="form-label">Adresse</label>
-                <input type="text" class="form-control" id="address" placeholder="42 rue Turenne" required>
+                <input type="text" class="form-control" id="address" placeholder="42 rue Turenne" required name="addresse">
                 <div class="invalid-feedback">
                   Merci d'entrer une adresse valide.
                 </div>
@@ -158,7 +159,7 @@
 
               <div class="col-12">
                 <label for="address2" class="form-label">Complément d'adresse <span class="text-muted">(Optionnel)</span></label>
-                <input type="text" class="form-control" id="address2" placeholder="Lieu dit">
+                <input type="text" class="form-control" id="address2" placeholder="Lieu dit" name="complement">
               </div>
 
               <!-- <div class="col-md-5">
@@ -174,7 +175,7 @@
 
               <div class="col-md-8">
                 <label for="zip" class="form-label">Ville</label>
-                <input type="text" class="form-control" id="zip" placeholder="Bordeaux" required>
+                <input type="text" class="form-control" id="zip" placeholder="Bordeaux" required name="commune">
                 <div class="invalid-feedback">
                   Merci d'entrer une ville valide.
                 </div>
@@ -182,7 +183,7 @@
 
               <div class="col-md-4">
                 <label for="zip" class="form-label">Code postal</label>
-                <input type="text" class="form-control" id="zip" placeholder="33000" required>
+                <input type="text" class="form-control" id="zip" placeholder="33000" required name="code_postal">
                 <div class="invalid-feedback">
                   Merci d'entrer un code postal valide.
                 </div>
@@ -191,7 +192,7 @@
 
               <div class="col-md-4">
                 <label for="state" class="form-label">Combien de pièces principales (hors...)?</label>
-                <select class="form-select" id="state" required>
+                <select class="form-select" id="state" required name="nb_pieces_principales">
                   <option value="">Choisissez...</option>
                   <option>1</option>
                   <option>2</option>
@@ -208,14 +209,14 @@
               </div>
               <div class="col-md-4">
                 <label for="zip" class="form-label">Superficie du batiment</label>
-                <input type="text" class="form-control" id="zip" placeholder="130" required>
+                <input type="text" class="form-control" id="zip" placeholder="130" required name="surface_reelle_bati">
                 <div class="invalid-feedback">
                   Merci d'entrer la superficie du batiment en chiffres.
                 </div>
               </div>
               <div class="col-md-4">
                 <label for="sup" class="form-label">Superficie du terrain</label>
-                <input type="text" class="form-control" id="zip" placeholder="500" required>
+                <input type="text" class="form-control" id="zip" placeholder="500" required name="surface_terrain">
                 <div class="invalid-feedback">
                   Merci d'entrer la superficie du terrain en chiffres.
                 </div>
@@ -223,7 +224,7 @@
               <div class="my-3">
                 <h4 class="mb-3">Le bien a-t-il une dépendance ?</h4>
                 <div class="form-check">
-                  <input id="HasDependance" name="Dependance" type="radio" class="form-check-input"  required>
+                  <input id="HasDependance" name="Dependance" type="radio" class="form-check-input"  required name ="Dependance">
                   <label class="form-check-label" for="HasDependance"> Oui</label>
                 </div>
                 <div class="form-check">
@@ -256,8 +257,8 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
 
-  <!--  <script src="form-validation.js"> </script> -->
-    <!-- <script src = "templates/form-validation.js">  </script> -->
+    <script src="../static/form-validation.js"></script>
+    <!-- <script src="../static/api.js"></script> -->
 </body>
 
 </html>
