@@ -52,6 +52,7 @@ async def post_properties_feature(request: Request,
                         email: str = Form(...),
                         addresse: str = Form(...),
                         complement: str = Form(None),
+                        lieu : str = Form(...),
                         commune: str = Form(...),
                         code_postal: str = Form(...),
                         nb_pieces_principales: float = Form(...),
@@ -60,7 +61,7 @@ async def post_properties_feature(request: Request,
                         Dependance: bool = Form(...)):
 
 
-    df= external_api_calls(addresse, complement, commune,code_postal,
+    df= external_api_calls(addresse, complement,lieu, commune,code_postal,
                      nb_pieces_principales,surface_reelle_bati,
                      surface_terrain,Dependance).call_api_addresse().call_api_pyris()
 

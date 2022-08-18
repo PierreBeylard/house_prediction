@@ -7,10 +7,11 @@ class external_api_calls :
     api address gouv for geo coordinates, uniformised street, departement & city code
     api pyris in order to obtain IRIS from coordinates """
 
-    def __init__ (self, addresse, complement, commune,code_postal,
+    def __init__ (self, addresse, complement, lieu, commune,code_postal,
                      nb_pieces_principales,surface_reelle_bati,surface_terrain,Dependance):
         self.addresse = addresse
         self.complement = complement
+        self.lieu = lieu
         self.commune = commune
         self.code_postal = code_postal
         self.nb_pieces_principales = nb_pieces_principales
@@ -46,12 +47,34 @@ class external_api_calls :
 
     def call_api_pyris (self):
         ## reste à faire -- appel vers d'autres API en fonction de la région Metropole, DOM ...)
-        pyris_api_url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
-        try:
-            IRIS = requests.get(
-                f'{pyris_api_url}{self.coordinates}').json()['complete_code']
-        except:
-            IRIS = 'not found'
+        if self.lieu == 'France Metropolitaine':
+            url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
+            try:
+                IRIS = requests.get(
+                f'{url}{self.coordinates}').json()['complete_code']
+            except:
+                IRIS = 'not found'
+        elif self.lieu == 'La Guadeloupe':
+            url =f"https://regionguadeloupe.opendatasoft.com/api/records/1.0/search/?dataset=iris-millesime-france&q={self.clean_code_commune}&sort=year&facet=com_arm_name"
+            try:
+                IRIS = requests.get(
+                    f'{url}').json()['records'][0]['fields']['iris_code']
+            except:
+                IRIS = 'not found'
+        elif self.lieu == 'La Martinique':
+            url = f"https://public.opendatasoft.com/api/records/1.0/search/?dataset=georef-france-iris&q={self.clean_code_commune}&sort=year&facet=com_arm_name"
+            try:
+                IRIS = requests.get(
+                    f'{url}').json()['records'][0]['fields']['iris_code']
+            except:
+                IRIS = 'not found'
+        elif self.lieu == 'La Reunion':
+            url = f"https://data.opendatasoft.com/api/records/1.0/search/?dataset=iris-millesime-france%40lareunion&q={self.clean_code_commune}&sort=year&facet=com_arm_name"
+            try:
+                IRIS = requests.get(
+                    f'{url}').json()['records'][0]['fields']['iris_code']
+            except:
+                IRIS = 'not found'
         property_dict = {
             'type_de_voie': [self.type_de_voie],
             'clean_code_departement': [self.clean_code_departement],
