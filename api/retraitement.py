@@ -141,3 +141,5 @@ class Pipeline:
         model = make_pipeline(preprocessor, LinearRegression())
         fitted_model = model.fit(self.X_train, self.y_train)
         return fitted_model, self.X_train, self.y_train, self.X_test, self.y_test
+
+
