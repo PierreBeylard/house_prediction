@@ -8,7 +8,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 
-class prepare_received_data:
+class prepareReceivedData:
 
     def __init__(self,df):
         self.df = df

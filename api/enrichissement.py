@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 from sqlalchemy import create_engine
 
-class external_api_calls :
+class externalApiCalls :
     """external calls to :
     api address gouv for geo coordinates, uniformised street, departement & city code
     api pyris in order to obtain IRIS from coordinates """
@@ -47,7 +47,6 @@ class external_api_calls :
         return self
 
     def call_api_pyris (self):
-        ## reste à faire -- appel vers d'autres API en fonction de la région Metropole, DOM ...)
         if self.lieu == 'France Metropolitaine':
             url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
             try:
@@ -119,3 +118,30 @@ class external_api_calls :
         df_stat = df_stat[variables_to_keep]
         self.df = pd.concat([self.df, df_stat], axis=1)
         return self.df
+
+
+class fraisCalculation :
+    """calcul des frais de notaires et des frais estimés d'agence """
+
+    def __init__ (self, low_result,result,high_result, neuf):
+        self.low_result = low_result
+        self.result = result
+        self.high_result = high_result
+        self.neuf = neuf
+
+    def frais_notaires (self):
+        if self.neuf == 'Neuf':
+            self.frais_notaires_low= round(self.low_result*2.5/100)
+            self.frais_notaires_n= round(self.result*2.5/100)
+            self.frais_notaires_high = round(self.high_result*2.5/100)
+        else:
+            self.frais_notaires_low= round(self.low_result*7.5/100)
+            self.frais_notaires_n= round(self.result*7.5/100)
+            self.frais_notaires_high = round(self.high_result*7.5/100)
+        return self.frais_notaires_low, self.frais_notaires_n, self.frais_notaires_high
+
+    def frais_agence (self):
+        self.frais_agence_low= round(self.low_result*2.5/100)
+        self.frais_agence_n= round(self.result*2.5/100)
+        self.frais_agence_high = round(self.high_result*2.5/100)
+        return self.frais_agence_low ,self.frais_agence_n , self.frais_agence_high

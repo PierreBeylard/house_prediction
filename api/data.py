@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from sqlalchemy import create_engine
 
-class loading_data_in_db:
+class loadingDataInDb:
     """ class helping to load data into a database
     each time a demand is passed, data is uploaded into database
     please enter db name as second argument

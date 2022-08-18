@@ -4,9 +4,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import requests
 import pandas as pd
-from retraitement import prepare_received_data
-from data import loading_data_in_db
-from enrichissement import external_api_calls
+from retraitement import prepareReceivedData
+from data import loadingDataInDb
+from enrichissement import externalApiCalls, fraisCalculation
 import pickle
 
 
@@ -59,24 +59,47 @@ async def post_properties_feature(request: Request,
                         surface_reelle_bati: float = Form(...),
                         surface_terrain: float = Form(...),
                         Dependance: bool = Form(...),
+                        neuf : str = Form(...),
                         terrain : str = Form(...)):
 
 
-    df= external_api_calls(addresse, complement,lieu, commune,code_postal,
-                     nb_pieces_principales,surface_reelle_bati,
-                     surface_terrain,Dependance,terrain).call_api_addresse().call_api_pyris()
+    df = externalApiCalls(addresse, complement, lieu, commune, code_postal,
+                          nb_pieces_principales, surface_reelle_bati,
+                          surface_terrain, Dependance,
+                          terrain).call_api_addresse().call_api_pyris()
 
-    df = prepare_received_data(df).dep_and_terrain().columns_featuring_act(
+    df = prepareReceivedData(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
 
     filename = 'house_dep_model_aggregations_logement_act.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
     result= int(round(result[0]))
+    low_result = int(round(result - (result*10/100)))
+    high_result = int(round(result + (result*10/100)))
 
-    loading_data_in_db(df, 'house_pred_database',
-                       'demands',result).load_df_db()
+    loadingDataInDb(df, 'house_pred_database', 'demands', result).load_df_db()
 
-    return templates.TemplateResponse("index.html",context={'request': request, 'result': result,
-     'surface':surface_reelle_bati, 'commune': commune
-    })
+    frais_notaire_low, frais_notaire, frais_notaire_high = fraisCalculation(
+        low_result, result, high_result, neuf).frais_notaires()
+    frais_agence_low, frais_agence, frais_agence_high = fraisCalculation(
+        low_result, result, high_result, neuf).frais_agence()
+
+    return templates.TemplateResponse("index.html",
+                                      context={
+                                          'request': request,
+                                          'result': result,
+                                          'surface': surface_reelle_bati,
+                                          'pieces': int(round(nb_pieces_principales)),
+                                          'commune': commune,
+                                          'low_result': low_result,
+                                          'high_result': high_result,
+                                          'frais_notaire_low':
+                                          frais_notaire_low,
+                                          'frais_notaire': frais_notaire,
+                                          'frais_notaire_high':
+                                          frais_notaire_high,
+                                          'frais_agence_low':frais_agence_low,
+                                           'frais_agence':frais_agence,
+                                            'frais_agence_high':frais_agence_high
+                                      })
