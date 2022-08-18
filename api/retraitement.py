@@ -14,7 +14,7 @@ class prepare_received_data:
         self.df = df
 
     def dependance (self):
-        self.df['Dependance'] = str(0) if False else str(1)
+        self.df['Dependance'] = str(1) if False else str(0)
         return self
 
     def columns_featuring_act (self) :
@@ -141,5 +141,3 @@ class Pipeline:
         model = make_pipeline(preprocessor, LinearRegression())
         fitted_model = model.fit(self.X_train, self.y_train)
         return fitted_model, self.X_train, self.y_train, self.X_test, self.y_test
-
-
