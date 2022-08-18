@@ -32,7 +32,10 @@ class external_api_calls :
             self.lat = result['geometry']['coordinates'][1]
             self.clean_code_commune = result['properties']['citycode']
             self.clean_code_departement = result['properties']['context'].split(',')[0]
-            self.type_de_voie = result['properties']['street'].split(' ')[0]
+            try :
+                self.type_de_voie = result['properties']['street'].split(' ')[0]
+            except :
+                self.type_de_voie = result['properties']['name'].split(' ')[0]
             self.code_postal = result['properties']['postcode']
         except:
             self.long = 'not found'
@@ -42,7 +45,7 @@ class external_api_calls :
         return self
 
     def call_api_pyris (self):
-    ## reste à faire -- appel vers d'autres API en fonction de la région Metropole, DOM ...)
+        ## reste à faire -- appel vers d'autres API en fonction de la région Metropole, DOM ...)
         pyris_api_url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
         try:
             IRIS = requests.get(

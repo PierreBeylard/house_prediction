@@ -30,13 +30,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    info = {"page": "ceci est importé dans le script html par data.page"}
-    return templates.TemplateResponse("index.html", {
-        "request": request
-    #       ,"data": info
-    })
+
+@app.get('/')
+async def get_root():
+    return {'message': 'Welcome to the real estate evaluation app'}
+
 @app.get("/property", response_class=HTMLResponse)
 async def home(request: Request):
     info = {"page": "ceci est importé dans le script html par data.page"}
@@ -72,10 +70,11 @@ async def post_properties_feature(request: Request,
     filename = 'house_dep_model_aggregations_logement_act.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
+    result= int(round(result[0]))
 
     loading_data_in_db(df, 'house_pred_database',
                        'demands',result).load_df_db()
 
-    return templates.TemplateResponse("index.html", {
-        "request": request
+    return templates.TemplateResponse("index.html",context={'request': request, 'result': result,
+     'surface':surface_reelle_bati, 'commune': commune
     })

@@ -56,7 +56,6 @@
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="../static/logo.PNG" alt="" width="120" height="95">
         <h2> Formulaire d'évaluation</h2>
-
         <p class="lead">Merci de remplir les champs ci dessous pour que nous évaluions la valeur du bien. Tous les champs sont obligatoires.</p>
 
       </div>
@@ -238,6 +237,10 @@
 
             <button class="w-100 btn btn-primary btn-lg" type="submit"> Obtain evaluation result</button>
           </form>
+
+          {% if result %}
+          <h2>The average estimated price is {{result}} €  for a property of {{surface}} situated in {{commune}}.</h2>
+          {% endif %}
         </div>
       </div>
     </main>

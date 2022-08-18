@@ -22,3 +22,4 @@ class loading_data_in_db:
                        con=engine,
                        if_exists='append',
                        index=False)
+        engine.dispose()
