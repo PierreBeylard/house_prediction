@@ -8,7 +8,7 @@ class external_api_calls :
     api pyris in order to obtain IRIS from coordinates """
 
     def __init__ (self, addresse, complement, lieu, commune,code_postal,
-                     nb_pieces_principales,surface_reelle_bati,surface_terrain,Dependance):
+                     nb_pieces_principales,surface_reelle_bati,surface_terrain,Dependance,terrain):
         self.addresse = addresse
         self.complement = complement
         self.lieu = lieu
@@ -18,6 +18,7 @@ class external_api_calls :
         self.surface_reelle_bati = surface_reelle_bati
         self.surface_terrain = surface_terrain
         self.Dependance = Dependance
+        self.terrain = terrain
 
     def call_api_addresse (self) :
         addresse_for_enrichment = (self.addresse, str(self.complement), self.commune)
@@ -84,7 +85,7 @@ class external_api_calls :
             'surface_reelle_bati': [self.surface_reelle_bati],
             'nb_pieces_principales': [self.nb_pieces_principales],
             'Dependance': [self.Dependance],
-            'main_type_terrain': ['']
+            'main_type_terrain': [self.terrain]
         }
         self.df = pd.DataFrame(property_dict)
         self.df['IRIS'] = IRIS

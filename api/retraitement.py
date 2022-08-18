@@ -13,8 +13,16 @@ class prepare_received_data:
     def __init__(self,df):
         self.df = df
 
-    def dependance (self):
+    def dep_and_terrain (self):
         self.df['Dependance'] = str(1) if False else str(0)
+        if self.df['main_type_terrain'][0] == 'Champs':
+            self.df.at[0,'main_type_terrain'] = 'T'
+        elif self.df['main_type_terrain'][0] == 'Verger':
+            self.df.at[0,'main_type_terrain'] = 'VE'
+        elif self.df['main_type_terrain'][0] == 'Terrain batir':
+            self.df.at[0, 'main_type_terrain'] = 'AB'
+        else :
+            self.df['main_type_terrain'] = 'S'
         return self
 
     def columns_featuring_act (self) :
@@ -105,6 +113,7 @@ class prepare_received_data:
         self.df["type_de_voie"]= self.df["type_de_voie"].replace(np.nan,"vide")
         return self.df
 
+## a supprimer (inclue dans le model)
 class Pipeline:
 
     def __init__(self, df):

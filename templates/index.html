@@ -124,7 +124,7 @@
                   <option>La Reunion </option>
                 </select>
                 <div class="invalid-feedback">
-                  Merci de sélectionner votre pays.
+                  Merci de sélectionner le lieu Frrance Métropolitaine ou DOM.
                 </div>
               </div>
 
@@ -176,8 +176,9 @@
                   Merci d'entrer la superficie du terrain en chiffres.
                 </div>
               </div>
-              <div class="my-3">
-                <h4 class="mb-3">Le bien a-t-il une dépendance ?</h4>
+              <div class="col-md-6">
+                <!-- <h4 class="mb-3">Le bien a-t-il une dépendance ?</h4> -->
+                <label for="depend" class="form-label">Le bien a-t-il une dépendance </label>
                 <div class="form-check">
                   <input id="HasDependance" name="Dependance" type="radio" class="form-check-input"  required name ="Dependance">
                   <label class="form-check-label" for="HasDependance"> Oui</label>
@@ -187,6 +188,20 @@
                   <label class="form-check-label" for="NoDependance">Non</label>
                 </div>
               </div>
+              <div class="col-md-6">
+                <label for="terrain" class="form-label">Spécifiez le type de terrain </label>
+                <select class="form-select" id="country" required name="terrain">
+                <option value="">Choisissez...</option>
+                <option>Pas de terrain</option>
+                <option>Jardin</option>
+                <option>Champs</option>
+                <option>Verger</option>
+                <option>Terrain batir</option>
+                </select>
+                <div class="invalid-feedback">
+                       Merci de sélectionner le type de terrain.
+                </div>
+
             </div>
 
             <hr class="my-4">

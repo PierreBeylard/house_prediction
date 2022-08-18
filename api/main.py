@@ -58,14 +58,15 @@ async def post_properties_feature(request: Request,
                         nb_pieces_principales: float = Form(...),
                         surface_reelle_bati: float = Form(...),
                         surface_terrain: float = Form(...),
-                        Dependance: bool = Form(...)):
+                        Dependance: bool = Form(...),
+                        terrain : str = Form(...)):
 
 
     df= external_api_calls(addresse, complement,lieu, commune,code_postal,
                      nb_pieces_principales,surface_reelle_bati,
-                     surface_terrain,Dependance).call_api_addresse().call_api_pyris()
+                     surface_terrain,Dependance,terrain).call_api_addresse().call_api_pyris()
 
-    df = prepare_received_data(df).dependance().columns_featuring_act(
+    df = prepare_received_data(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
 
     filename = 'house_dep_model_aggregations_logement_act.sav'
