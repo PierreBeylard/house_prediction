@@ -59,8 +59,7 @@ class apiEnrichment:
     https://pyris.datajazz.io/ --for IRIS
     """
 
-    def __init__(self,df
-                 addresse):
+    def __init__(self,df):
         self.df = df
   #      self.addresse = addresse
 
