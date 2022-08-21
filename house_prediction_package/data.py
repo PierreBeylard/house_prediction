@@ -81,7 +81,7 @@ class apiEnrichment:
 
     def enrichissement_iris_insee(self):
         IRIS=[]
-        for dep, city, coord in zip(self.df["clean_code_departement"], self.df["clean_code_commune"], self.df["coordinates"])
+        for dep, city, coord in zip(self.df["clean_code_departement"], self.df["clean_code_commune"], self.df["coordinates"]):
             if dep == '971':
                 url =f"https://regionguadeloupe.opendatasoft.com/api/records/1.0/search/?dataset=iris-millesime-france&q={city}&sort=year&facet=com_arm_name"
                 try:
