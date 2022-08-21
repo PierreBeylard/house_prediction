@@ -4,6 +4,8 @@ import numpy as np
 from datetime import datetime
 from more_itertools import chunked
 from scipy import stats
+from data import apiEnrichment
+
 
 from sklearn.model_selection import train_test_split
 #sans doute à supprimer au lancement final du modele
@@ -48,7 +50,7 @@ class Preprocessing :
         num_columns = self.df.dtypes[(self.df.dtypes == 'int')
                                      | (self.df.dtypes == 'float')].index
         non_num_col = ['No disposition', 'No voie', 'Code postal', 'Code commune',
-       'Prefixe de section', 'No plan','Code type local']
+        'Prefixe de section', 'No plan','Code type local']
         num_columns = [value for value in num_columns if value not in non_num_col]
         for column in ob_columns :
             self.df[column]=self.df[column].replace(np.nan,'',regex=True)
@@ -121,8 +123,6 @@ class Preprocessing :
         self.df= self.df.drop(["dependance","Maison"],axis =1)
         return self.df
 
-    # to do : function calling enrichissement from data
-
 
     def feature_generation (self):
         # convert the 'Date' column to datetime format
@@ -136,7 +136,18 @@ class Preprocessing :
         self.df=self.df.replace({"type_voie" : dict_type_voie})
         self.df["type_de_voie"]= self.df["type_de_voie"].replace(np.nan,'vide')
         self.df["clean_code_commune"]=[c+a[1:] if c[:2]== '97' else (c+a) for c, a in zip(self.df["clean_code_departement"], self.df["clean_code_commune"])]
+        self.df["voie"]=self.df["voie"].replace(" ","+")
+        self.df["adresse"] = self.df[["num_voie", "type_de_voie", "voie"]].apply(lambda x: "+".join(x.astype(str)), axis=1)
+        self.df["adresse"] = self.df[["adresse", "clean_code_commune"]].apply(
+            lambda x: "&citycode=".join(x.astype(str)), axis=1)
         return self.df
+
+# to do : function calling enrichissement from data
+    def enrichissement(self):
+        apiEnrichment(self.df).enrichissement_coordinates(
+        ).enrichissement_iris_insee()
+        return self.df
+
 
     def zscore (self) :
         # Calculate the z-score from scratch
@@ -162,15 +173,15 @@ class Preprocessing :
             "surface_terrain",
             "surface_reelle_bati", "nb_pieces_principales",
             "main_type_terrain",  "Dependance",'Taux_RP', 'Taux_LV', 'Taux_MAI',
-       'Taux_RP_1P', 'Taux_RP_2P', 'Taux_RP_3P', 'Taux_RP_4P', 'Taux_RP_5P',
-       'Taux_RP_30', 'Taux_RP_40', 'Taux_RP_60', 'Taux_RP_80', 'Taux_RP_100',
-       'Taux_RP_120', 'Taux_RP_P120', 'Taux_RP_GAR', 'Taux_RP_PROPRIO',
-       'Taux_RP_GRATUIT', 'Taux_RP_LOC', 'Taux_RP_HML', 'Taux_RP_AM02',
-       'Taux_RP_AM04', 'Taux_RP_AM09', 'Taux_RP_AM09P','Taux_1524',
-       'Taux_2554', 'Taux_5564', 'Taux_P_Act', 'Taux_P_ActOct', 'Taux_P_CHO',
-       'Taux_CS1', 'Taux_CS2', 'Taux_CS3', 'Taux_CS4', 'Taux_Travail_Commune',
-       'Taux_TT', 'Taux_Mar', 'Taux_Velo', 'Taux_2Roues', 'Taux_Voit',
-       'Taux_TCOM',
+        'Taux_RP_1P', 'Taux_RP_2P', 'Taux_RP_3P', 'Taux_RP_4P', 'Taux_RP_5P',
+        'Taux_RP_30', 'Taux_RP_40', 'Taux_RP_60', 'Taux_RP_80', 'Taux_RP_100',
+        'Taux_RP_120', 'Taux_RP_P120', 'Taux_RP_GAR', 'Taux_RP_PROPRIO',
+        'Taux_RP_GRATUIT', 'Taux_RP_LOC', 'Taux_RP_HML', 'Taux_RP_AM02',
+        'Taux_RP_AM04', 'Taux_RP_AM09', 'Taux_RP_AM09P','Taux_1524',
+        'Taux_2554', 'Taux_5564', 'Taux_P_Act', 'Taux_P_ActOct', 'Taux_P_CHO',
+        'Taux_CS1', 'Taux_CS2', 'Taux_CS3', 'Taux_CS4', 'Taux_Travail_Commune',
+        'Taux_TT', 'Taux_Mar', 'Taux_Velo', 'Taux_2Roues', 'Taux_Voit',
+        'Taux_TCOM',
         'month']
         # Séparation des variables catégorielles et numériques
         categorical_features = [
@@ -181,15 +192,15 @@ class Preprocessing :
         ]
         numerical_features = [
             "surface_terrain", "surface_reelle_bati", "nb_pieces_principales",'Taux_RP', 'Taux_LV', 'Taux_MAI',
-       'Taux_RP_1P', 'Taux_RP_2P', 'Taux_RP_3P', 'Taux_RP_4P', 'Taux_RP_5P',
-       'Taux_RP_30', 'Taux_RP_40', 'Taux_RP_60', 'Taux_RP_80', 'Taux_RP_100',
-       'Taux_RP_120', 'Taux_RP_P120', 'Taux_RP_GAR', 'Taux_RP_PROPRIO',
-       'Taux_RP_GRATUIT', 'Taux_RP_LOC', 'Taux_RP_HML', 'Taux_RP_AM02',
-       'Taux_RP_AM04', 'Taux_RP_AM09', 'Taux_RP_AM09P','Taux_1524',
-       'Taux_2554', 'Taux_5564', 'Taux_P_Act', 'Taux_P_ActOct', 'Taux_P_CHO',
-       'Taux_CS1', 'Taux_CS2', 'Taux_CS3', 'Taux_CS4', 'Taux_Travail_Commune',
-       'Taux_TT', 'Taux_Mar', 'Taux_Velo', 'Taux_2Roues', 'Taux_Voit',
-       'Taux_TCOM'
+        'Taux_RP_1P', 'Taux_RP_2P', 'Taux_RP_3P', 'Taux_RP_4P', 'Taux_RP_5P',
+        'Taux_RP_30', 'Taux_RP_40', 'Taux_RP_60', 'Taux_RP_80', 'Taux_RP_100',
+        'Taux_RP_120', 'Taux_RP_P120', 'Taux_RP_GAR', 'Taux_RP_PROPRIO',
+        'Taux_RP_GRATUIT', 'Taux_RP_LOC', 'Taux_RP_HML', 'Taux_RP_AM02',
+        'Taux_RP_AM04', 'Taux_RP_AM09', 'Taux_RP_AM09P','Taux_1524',
+        'Taux_2554', 'Taux_5564', 'Taux_P_Act', 'Taux_P_ActOct', 'Taux_P_CHO',
+        'Taux_CS1', 'Taux_CS2', 'Taux_CS3', 'Taux_CS4', 'Taux_Travail_Commune',
+        'Taux_TT', 'Taux_Mar', 'Taux_Velo', 'Taux_2Roues', 'Taux_Voit',
+        'Taux_TCOM'
         ]
         for column in categorical_features:
             self.df[column] = self.df[column].replace(np.nan, "").apply(str)

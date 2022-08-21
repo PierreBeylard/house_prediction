@@ -53,36 +53,92 @@ class loading_data_in_db:
                        index=False)
 
 
-class api_enrichment :
+class apiEnrichment:
     """Objective : obtain latitude, longitude from 2 apis :
     https://adresse.data.gouv.fr/api-doc/adresse --- to normalize & obtain coordinates from an address
     https://pyris.datajazz.io/ --for IRIS
     """
 
-    def __init__(self,
+    def __init__(self,df
                  addresse):
-        self.addresse = addresse
+        self.df = df
+  #      self.addresse = addresse
 
     def enrichissement_coordinates(self):
+        result = requests.get(
+                f'https://api-adresse.data.gouv.fr/search/?q={self.df["addresse"]}').json(
+                )['features'][0]['geometry']['coordinates']
+        long =[]
+        lat =[]
         try :
-            long = requests.get(
-                f'https://api-adresse.data.gouv.fr/search/?q={self.addresse}').json(
-                )['features'][0]['geometry']['coordinates'][0]
-            lat = requests.get(
-                f'https://api-adresse.data.gouv.fr/search/?q={addresse_for_enrichment}').json(
-                )['features'][0]['geometry']['coordinates'][1]
+            long.append(result[0])
+            lat.append(result[1])
         except :
-            long = 'not found'
-            lat = 'not found'
+            long.append('not found')
+            lat.append('not found')
+        self.df['coordinates'] = lat+"&lon="+long
         return self
 
-    def enrichissement_iris(self):
-        coordinates = (str(self.lat), str(self.long))
-        coordinates = "&lon=".join(coordinates)
-        pyris_api_url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
-        try:
-            self.IRIS = requests.get(
-                f'{pyris_api_url}{coordinates}').json()['complete_code']
-        except:
-            self.IRIS = 'not found'
-        return self.IRIS
+    def enrichissement_iris_insee(self):
+        IRIS=[]
+        for dep, city, coord in zip(self.df["clean_code_departement"], self.df["clean_code_commune"], self.df["coordinates"])
+            if dep == '971':
+                url =f"https://regionguadeloupe.opendatasoft.com/api/records/1.0/search/?dataset=iris-millesime-france&q={city}&sort=year&facet=com_arm_name"
+                try:
+                    IRIS.append(requests.get(
+                        f'{url}').json()['records'][0]['fields']['iris_code'])
+                except:
+                    IRIS.append('not found')
+            elif dep == '972' or dep == '973' :
+                url = f"https://public.opendatasoft.com/api/records/1.0/search/?dataset=georef-france-iris&q={city}&sort=year&facet=com_arm_name"
+                try:
+                    IRIS.append(requests.get(
+                        f'{url}').json()['records'][0]['fields']['iris_code'])
+                except:
+                    IRIS.append('not found')
+            elif dep == '974':
+                url = f"https://data.opendatasoft.com/api/records/1.0/search/?dataset=iris-millesime-france%40lareunion&q={city}&sort=year&facet=com_arm_name"
+                try:
+                    IRIS.append(requests.get(
+                        f'{url}').json()['records'][0]['fields']['iris_code'])
+                except:
+                    IRIS.append('not found')
+            else :
+                url = "https://pyris.datajazz.io/api/coords?geojson=false&lat="
+                try:
+                    IRIS.append(requests.get(
+                    f'{url}{coord}').json()['complete_code'])
+                except:
+                    IRIS.append('not found')
+
+        self.df['IRIS'] = IRIS
+        variables_to_keep = [
+            "IRIS", "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC", "P18_LOGVAC",
+            "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P", "P18_RP_3P",
+            "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2", "P18_RP_3040M2",
+            "P18_RP_4060M2", "P18_RP_6080M2", "P18_RP_80100M2", "P18_RP_100120M2",
+            "P18_RP_120M2P", "P18_RP_GARL", "P18_RP_PROP", "P18_RP_LOC",
+            "P18_RP_LOCHLMV", "P18_RP_GRAT", "P18_MEN_ANEM0002",
+            "P18_MEN_ANEM0204", "P18_MEN_ANEM0509", "P18_MEN_ANEM10P"
+        ]
+        engine = create_engine('sqlite:///../data/house_pred_database.sqlite',
+                               echo=True)
+        df_stat = pd.read_sql_query(
+            f'SELECT * FROM logements_stats WHERE IRIS= {IRIS}', con=engine)
+        df_stat = df_stat[variables_to_keep]
+        self.df = pd.concat([self.df, df_stat], axis=1)
+        df_stat = pd.read_sql_query(
+            f'SELECT * FROM activites_stat WHERE IRIS= {IRIS}', con=engine)
+        variables_to_keep = [
+            "IRIS", "P18_POP1564", "P18_POP1524", "P18_POP2554", "P18_POP5564",
+            "P18_ACT1564", "P18_ACTOCC1564", "P18_CHOM1564", "C18_ACT1564",
+            "C18_ACT1564_CS1", "C18_ACT1564_CS3", "C18_ACT1564_CS2",
+            "C18_ACT1564_CS4", "C18_ACTOCC1564", "C18_ACTOCC1564_CS1",
+            "C18_ACTOCC1564_CS2", "C18_ACTOCC1564_CS3", "C18_ACTOCC1564_CS4",
+            "P18_ACTOCC15P_ILT1", "C18_ACTOCC15P", "C18_ACTOCC15P_PAS",
+            "C18_ACTOCC15P_MAR", "C18_ACTOCC15P_VELO", "C18_ACTOCC15P_2ROUESMOT",
+            "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"
+        ]
+        df_stat = df_stat[variables_to_keep]
+        self.df = pd.concat([self.df, df_stat], axis=1)
+        return self.df
