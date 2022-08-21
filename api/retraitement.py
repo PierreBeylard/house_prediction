@@ -111,9 +111,11 @@ class prepareReceivedData:
         if self.df["type_de_voie"][0] in type_voie_list:
             self.df["type_de_voie"] = "Autres"
         self.df["type_de_voie"]= self.df["type_de_voie"].replace(np.nan,"vide")
+        ## correted directly inside train dataset :)
+#        self.df["clean_code_commune"] = [c[3:].zfill(3) for c in  self.df["clean_code_commune"]]
         return self.df
 
-## a supprimer (inclue dans le model)
+## to delete, included in model 
 class Pipeline:
 
     def __init__(self, df):

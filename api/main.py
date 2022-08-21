@@ -70,8 +70,8 @@ async def post_properties_feature(request: Request,
 
     df = prepareReceivedData(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
-
-    filename = 'house_dep_model_aggregations_logement_act.sav'
+    #test_19_08  house_dep_model_aggregations_logement_act
+    filename = 'test_21_08_linear_corrected.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
     result= int(round(result[0]))
