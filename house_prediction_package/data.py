@@ -61,7 +61,7 @@ class apiEnrichment:
 
     def __init__(self,df):
         self.df = df
-  #      self.addresse = addresse
+#      self.addresse = addresse
 
     def enrichissement_coordinates(self):
         result = requests.get(
@@ -111,6 +111,7 @@ class apiEnrichment:
                     IRIS.append('not found')
 
         self.df['IRIS'] = IRIS
+        IRIS = tuple(IRIS.values)
         variables_to_keep = [
             "IRIS", "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC", "P18_LOGVAC",
             "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P", "P18_RP_3P",
@@ -123,11 +124,13 @@ class apiEnrichment:
         engine = create_engine('sqlite:///../data/house_pred_database.sqlite',
                                echo=True)
         df_stat = pd.read_sql_query(
-            f'SELECT * FROM logements_stats WHERE IRIS= {IRIS}', con=engine)
+            f'SELECT * FROM logements_stats WHERE IRIS in {IRIS}', con=engine)
         df_stat = df_stat[variables_to_keep]
-        self.df = pd.concat([self.df, df_stat], axis=1)
+
+        self.df = self.df.merge(df_stat, left_on='IRIS', right_on='IRIS',
+          suffixes=('_left', '_right'),  how='left')
         df_stat = pd.read_sql_query(
-            f'SELECT * FROM activites_stat WHERE IRIS= {IRIS}', con=engine)
+            f'SELECT * FROM activites_stat WHERE IRIS in {IRIS}', con=engine)
         variables_to_keep = [
             "IRIS", "P18_POP1564", "P18_POP1524", "P18_POP2554", "P18_POP5564",
             "P18_ACT1564", "P18_ACTOCC1564", "P18_CHOM1564", "C18_ACT1564",
@@ -139,5 +142,9 @@ class apiEnrichment:
             "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"
         ]
         df_stat = df_stat[variables_to_keep]
-        self.df = pd.concat([self.df, df_stat], axis=1)
+        self.df = self.df.merge(df_stat,
+                                left_on='IRIS',
+                                right_on='IRIS',
+                                suffixes=('_left', '_right'),
+                                how='left')
         return self.df
