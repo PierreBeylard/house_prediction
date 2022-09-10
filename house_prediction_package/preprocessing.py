@@ -32,7 +32,7 @@ class Preprocessing :
         # suppression of 100% empty columns - these columns are officially not completed in this db
         self.df = self.df.drop(columns,axis=1)
         # suppression of columns poorly completed
-        columns_to_drop = [column for column in self.df.columns if ((self.df[column].isnull().value_counts().sort_index()[0]/self.df.shape[0])*100) < 2 ]
+        columns_to_drop = [column for column in self.df.columns if ((self.df[column].isnull().value_counts()[0]/self.df.shape[0])*100) < 2 ]
         self.df= self.df.drop(columns_to_drop,axis=1)
         # replacement of , by . in numerical variables & deletion of non numrical caracters in num columns :
         columns_num = ['Valeur fonciere', 'Surface Carrez du 1er lot', 'Nombre de lots',
@@ -79,7 +79,7 @@ class Preprocessing :
             if i == "Prefixe de section" :
                 self.df[i] = self.df[i].apply(str).apply(lambda x: x[:3])
             new_variable = [
-                str(value).replace(".","").zfill(j) for sublist in list(chunked_data)
+                str(value).replace(".","").zfill(j) for sublist in chunked_data
                 for value in sublist
             ]
             self.df[f"clean_{i.replace(' ','_').lower()}"] = new_variable
@@ -105,7 +105,7 @@ class Preprocessing :
             ,"clean_code_commune": max(x["clean_code_commune"])
             ,"surface_carrez_lot_1" :  x["Surface Carrez du 1er lot"].sum()/((x["Surface reelle bati"].count()/x["Nature culture"].nunique()))
             ,"Nb_lots": x["Nombre de lots"].max()
-            ,"surface_terrain" : ((x["Surface terrain"].sum()/x["Surface reelle bati"].count()) if (int(x["Surface terrain"].nunique()) ==1 and int(x["Nature culture"].nunique()) == 1 )else x["Surface terrain"].sum())
+            ,"surface_terrain" : ((x["Surface terrain"].sum()/x["Surface reelle bati"].count()) if (int(x["Surface terrain"].nunique()) ==1 and int(x["Nature culture"].nunique()) == 1 )else x["Surface terrain"].unique().sum())
             ,"surface_reelle_bati" : (x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if (int(x["Nature culture"].nunique() > 1)) else x["Surface reelle bati"].sum())
             ,"nb_pieces_principales" : (x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum())
             ,"dependance" : x["Type local"].unique()
