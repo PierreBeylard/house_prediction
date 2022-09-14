@@ -96,7 +96,7 @@ class Preprocessing :
     def aggregate_transactions(self):
         self.df = self.df.groupby(["parcelle_cad_section","Date mutation","Valeur fonciere"], as_index= False).apply(lambda x : pd.Series({
             "num_voie" : x["No voie"].max()
-            ,"B_T_Q" : x["B/T/Q"].max()
+            ,"B_T_Q" : x["B/T/Q"].astype(str).max()
             ,"type_de_voie": x["Type de voie"].max()
             ,"voie": x["Voie"].max()
             ,"code_postal": x["Code postal"].max()
@@ -108,19 +108,20 @@ class Preprocessing :
             ,"surface_terrain" : ((x["Surface terrain"].sum()/x["Surface reelle bati"].count()) if (int(x["Surface terrain"].nunique()) ==1 and int(x["Nature culture"].nunique()) == 1 )else x["Surface terrain"].unique().sum())
             ,"surface_reelle_bati" : (x["Surface reelle bati"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if (int(x["Nature culture"].nunique() > 1)) else x["Surface reelle bati"].sum())
             ,"nb_pieces_principales" : (x["Nombre pieces principales"].sum()/(x["Surface reelle bati"].count()/x["Type local"].nunique()) if int(x["Nature culture"].nunique()) > 1 else x["Nombre pieces principales"].sum())
-            ,"dependance" : x["Type local"].unique()
+            ,"dependance" : (1 if (len(x["Type local"].unique()) ==1 and x["Type local"].unique()[0] == 'Dépendance') else 0)
+            ,"maison" : (1 if (len(x["Type local"].unique()) ==1 and x["Type local"].unique()[0] == 'Maison') else 0)
+            ,"appartement": (1 if (len(x["Type local"].unique()) ==1 and x["Type local"].unique()[0] == 'Appartement') else 0)
+            ,"multi_locaux":  x["Type local"].unique()
             ,"main_type_terrain" : x["Nature culture"].max()
             ,"parcelle_cadastrale": x["parcelle_cadastrale"].max()}))
         self.df = self.df.replace(np.inf, np.nan)
+       # self.df = self.df.replace(np.nan, 0)
         #drop rows with only dependances transactions as we focus on houses
-        self.df = self.df[self.df.dependance.apply(
-            lambda x: x.all() != "Dépendance")].reset_index(drop=True)
-        self.df["dependance"] = self.df.dependance.apply(sorted, 1)
-        self.df[["Dependance",
-                 "Maison"]] = pd.DataFrame(self.df.dependance.tolist(),
-                                           index=self.df.index)
-        self.df["Dependance"] = [1 if value =="Dépendance"else 0 for value in self.df["Dependance"]]
-        self.df= self.df.drop(["dependance","Maison"],axis =1)
+        self.df = self.df[self.df["dependance"]!=1]
+        #clean des lignes ou surfaces nulles ou == 0
+        self.df = self.df[self.df['surface_terrain']!=0]
+        self.df = self.df[self.df['surface_reelle_bati'] != 0]
+
         return self.df
 
 
