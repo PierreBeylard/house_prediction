@@ -10,7 +10,6 @@ from enrichissement import externalApiCalls, fraisCalculation
 import pickle
 
 
-
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
