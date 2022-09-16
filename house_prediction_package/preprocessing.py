@@ -115,18 +115,18 @@ class Preprocessing :
             ,"main_type_terrain" : x["Nature culture"].max()
             ,"parcelle_cadastrale": x["parcelle_cadastrale"].max()}))
         self.df = self.df.replace(np.inf, np.nan)
-       # self.df = self.df.replace(np.nan, 0)
+        # self.df = self.df.replace(np.nan, 0)
         #drop rows with only dependances transactions as we focus on houses
         self.df = self.df[self.df["dependance"]!=1]
         #clean des lignes ou surfaces nulles ou == 0
         self.df = self.df[self.df['surface_terrain']!=0]
         self.df = self.df[self.df['surface_reelle_bati'] != 0]
-
         return self.df
 
 
     def feature_generation (self):
         # convert the 'Date' column to datetime format
+        self.df = self.df[self.df['surface_reelle_bati'] != 0]
         self.df["month"] = pd.to_datetime(
             self.df["Date mutation"],format="%d/%m/%Y").dt.month
         self.df= self.df.drop(["Date mutation"], axis = 1)
@@ -141,6 +141,8 @@ class Preprocessing :
         self.df["adresse"] = self.df[["num_voie", "type_de_voie", "voie"]].apply(lambda x: "+".join(x.astype(str)), axis=1)
         self.df["adresse"] = self.df[["adresse", "clean_code_commune"]].apply(
             lambda x: "&citycode=".join(x.astype(str)), axis=1)
+        self.df["prix_m2"] = self.df["Valeur fonciere"] / self.df[
+            "surface_reelle_bati"]
         return self.df
 
 # to do : function calling enrichissement from data
