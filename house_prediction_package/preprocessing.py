@@ -134,7 +134,7 @@ class Preprocessing :
         dict_type_voie = dict()
         for value in self.df["type_de_voie"].value_counts()[self.df["type_de_voie"].value_counts()<300 ].index.values :
             dict_type_voie[value] = "Autres"
-        self.df=self.df.replace({"type_voie" : dict_type_voie})
+        self.df=self.df.replace({"type_de_voie" : dict_type_voie})
         self.df["type_de_voie"]= self.df["type_de_voie"].replace(np.nan,'vide')
         self.df["clean_code_commune"]=[c+a[1:] if c[:2]== '97' else (c+a) for c, a in zip(self.df["clean_code_departement"], self.df["clean_code_commune"])]
         self.df["voie"]=self.df["voie"].replace(" ","+")
