@@ -2,11 +2,12 @@ import pandas as pd
 import requests
 from sqlalchemy import create_engine
 
-class loadingDataInDb:
+class LoadingDataInDb:
     """ class helping to load data into a database
     each time a demand is passed, data is uploaded into database
     please enter db name as second argument
-    please enter table name as third argument"""
+    please enter table name as third argument
+    """
 
     def __init__(self, df, db_name, table_name, result):
         self.df = df

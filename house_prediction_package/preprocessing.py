@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 from more_itertools import chunked
 from scipy import stats
-from data import apiEnrichment
+from data import ApiEnrichment
 
 
 from sklearn.model_selection import train_test_split
@@ -147,7 +147,7 @@ class Preprocessing :
 
 # to do : function calling enrichissement from data
     def enrichissement(self):
-        apiEnrichment(self.df).enrichissement_coordinates(
+        ApiEnrichment(self.df).enrichissement_coordinates(
         ).enrichissement_iris_insee()
         return self.df
 

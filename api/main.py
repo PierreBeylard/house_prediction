@@ -4,9 +4,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import requests
 import pandas as pd
-from retraitement import prepareReceivedData
-from data import loadingDataInDb
-from enrichissement import externalApiCalls, fraisCalculation
+from retraitement import PrepareReceivedData
+from data import LoadingDataInDb
+from enrichissement import ExternalApiCalls, FraisCalculation
 import pickle
 
 
@@ -62,12 +62,12 @@ async def post_properties_feature(request: Request,
                         terrain : str = Form(...)):
 
 
-    df = externalApiCalls(addresse, complement, lieu, commune, code_postal,
+    df = ExternalApiCalls(addresse, complement, lieu, commune, code_postal,
                           nb_pieces_principales, surface_reelle_bati,
                           surface_terrain, Dependance,
                           terrain).call_api_addresse().call_api_pyris()
 
-    df = prepareReceivedData(df).dep_and_terrain().columns_featuring_act(
+    df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
     #test_19_08  house_dep_model_aggregations_logement_act
    # 'test_21_08_linear_corrected.sav'
@@ -78,11 +78,11 @@ async def post_properties_feature(request: Request,
     low_result = int(round(result - (result*10/100)))
     high_result = int(round(result + (result*10/100)))
 
-    loadingDataInDb(df, 'house_pred_database', 'demands', result).load_df_db()
+    LoadingDataInDb(df, 'house_pred_database', 'demands', result).load_df_db()
 
-    frais_notaire_low, frais_notaire, frais_notaire_high = fraisCalculation(
+    frais_notaire_low, frais_notaire, frais_notaire_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_notaires()
-    frais_agence_low, frais_agence, frais_agence_high = fraisCalculation(
+    frais_agence_low, frais_agence, frais_agence_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_agence()
 
     return templates.TemplateResponse("index.html",

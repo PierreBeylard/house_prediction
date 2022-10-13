@@ -34,10 +34,11 @@ class GetData:
         pass
 
 
-class loading_data_in_db:
+class LoadingDataInDb:
     """ class helping to load data into a database
     please enter db name as second argument
-    please enter table name as third argument"""
+    please enter table name as third argument
+    """
 
     def __init__(self, df, db_name, table_name):
         self.df = df
@@ -53,7 +54,7 @@ class loading_data_in_db:
                        index=False)
 
 
-class apiEnrichment:
+class ApiEnrichment:
     """Objective : obtain latitude, longitude from 2 apis :
     https://adresse.data.gouv.fr/api-doc/adresse --- to normalize & obtain coordinates from an address
     https://pyris.datajazz.io/ --for IRIS
@@ -141,7 +142,7 @@ class apiEnrichment:
                 df_IRIS.at[index,'superficie_m2'] = pd.read_sql_query(f'SELECT ST_Area(st_setSRID(geometry,4326)::GEOGRAPHY) as superficie_m2 FROM guf_2022 where "CODE_IRIS" = {value["IRIS"]}::TEXT', con = engine)['superficie_m2'][0]
             else :
                 df_IRIS.at[index,'superficie_m2'] = 'NOT FOUND'
-        loading_data_in_db(df_IRIS, 'house_pred_database',
+        LoadingDataInDb(df_IRIS, 'house_pred_database',
                            'IRIS_superficie').load_df_db()
 
 
@@ -207,7 +208,7 @@ class apiEnrichment:
         df_stat['densite_pop'] = df_stat['P18_POP'] / (
             df_stat['superficie_m2'] / 1000000)
         df_stat['nb_pieces_moyen'] = df_stat["P18_NBPI_RP"]/df_stat['P18_RP']
-        loading_data_in_db(df_stat, 'house_pred_database',
+        LoadingDataInDb(df_stat, 'house_pred_database',
                            'INSEE_MODEL_STAT').load_df_db()
         self.df = self.df.merge(df_stat,
                                 left_on='IRIS',

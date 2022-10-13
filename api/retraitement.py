@@ -2,13 +2,12 @@ from datetime import datetime
 import numpy as np
 
 from sklearn.impute import KNNImputer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
 
-class prepareReceivedData:
+class PrepareReceivedData:
 
     def __init__(self,df):
         self.df = df
@@ -115,7 +114,7 @@ class prepareReceivedData:
 #        self.df["clean_code_commune"] = [c[3:].zfill(3) for c in  self.df["clean_code_commune"]]
         return self.df
 
-## to delete, included in model 
+## to delete, included in model
 class Pipeline:
 
     def __init__(self, df):

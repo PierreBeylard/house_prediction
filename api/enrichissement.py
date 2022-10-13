@@ -2,10 +2,11 @@ import requests
 import pandas as pd
 from sqlalchemy import create_engine
 
-class externalApiCalls :
+class ExternalApiCalls :
     """external calls to :
     api address gouv for geo coordinates, uniformised street, departement & city code
-    api pyris in order to obtain IRIS from coordinates """
+    api pyris in order to obtain IRIS from coordinates
+    """
 
     def __init__ (self, addresse, complement, lieu, commune,code_postal,
                      nb_pieces_principales,surface_reelle_bati,surface_terrain,Dependance,terrain):
@@ -120,7 +121,7 @@ class externalApiCalls :
         return self.df
 
 
-class fraisCalculation :
+class FraisCalculation :
     """calcul des frais de notaires et des frais estimés d'agence """
 
     def __init__ (self, low_result,result,high_result, neuf):

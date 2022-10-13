@@ -1,24 +1,16 @@
 import numpy as np
 import pandas as pd
+
 from sklearn.impute import KNNImputer
-
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import RobustScaler
-
-
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import learning_curve
-
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, MinMaxScaler, RobustScaler
+from sklearn.model_selection import cross_val_score, learning_curve
 from sklearn.linear_model import LinearRegression
-
-import warnings
-warnings.filterwarnings('ignore')
-
 from sklearn import pipeline
 from sklearn.pipeline import make_pipeline
 from sklearn.compose import make_column_transformer
+
+import warnings
+warnings.filterwarnings('ignore')
 
 from house_prediction_package.preprocessing import Preprocessing
 from house_prediction_package.data import GetData
