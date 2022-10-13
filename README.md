@@ -7,6 +7,11 @@ The purpose of the project is to predict house prices in France at national leve
 This dataset regroups all real estates transactions that occured in 2021 in France (exclusion of Alsace Moselle et TOM)   
 The project also use the governemental API Adresse : https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.html#gros-consommateurs-de-l-api-api-adresse-data-gouv-fr      
 and finaly some open sources API in order to retreive IRIS code based on coordinates : https://public.opendatasoft.com
+Data enrichment thanks to INSEE open data : 
+ * https://www.insee.fr/fr/information/2383389 : Documentation sur les bases de données infracommunales à l'IRIS
+ * https://www.insee.fr/fr/statistiques/5650714#consulter : Couples - Familles - Ménages en 2018
+ * https://www.insee.fr/fr/statistiques/5650708#dictionnaire Activité des résidents en 2018
+ * https://www.insee.fr/fr/statistiques/5650749#dictionnaire : Logement en 2018
 
 
 ## Project layout : 
