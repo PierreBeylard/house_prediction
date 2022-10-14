@@ -15,9 +15,9 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 # parametrages pour préciser que le template html est dans le directory template et
 #le template css est dans le directory static
-templates = Jinja2Templates(directory="../templates")
+templates = Jinja2Templates(directory="./templates")
 # mount directory under /static path. # Access to static files in your html need to use static prefix
-app.mount("/static", StaticFiles(directory="../static"), name="static")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
 
 
 # Ajout de cette méthode pour gérer l'erreur d'accessibilité 'access-control-allow-origin'
