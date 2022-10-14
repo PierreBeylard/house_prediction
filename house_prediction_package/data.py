@@ -144,6 +144,7 @@ class ApiEnrichment:
                 df_IRIS.at[index,'superficie_m2'] = 'NOT FOUND'
         LoadingDataInDb(df_IRIS, 'house_pred_database',
                            'IRIS_superficie').load_df_db()
+        return self
 
 
 

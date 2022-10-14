@@ -148,7 +148,7 @@ class Preprocessing :
 # to do : function calling enrichissement from data
     def enrichissement(self):
         ApiEnrichment(self.df).enrichissement_coordinates(
-        ).enrichissement_iris_insee()
+        ).enrichissement_iris().calcul_superficie().enrichissement_insee()
         return self.df
 
 
