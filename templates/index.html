@@ -128,7 +128,7 @@
                 </div>
               </div>
 
-              <div class="col-md-8">
+              <div class="col-md-4">
                 <label for="zip" class="form-label">Ville</label>
                 <input type="text" class="form-control" id="zip" placeholder="Bordeaux" required name="commune">
                 <div class="invalid-feedback">
@@ -143,6 +143,17 @@
                   Merci d'entrer un code postal valide.
                 </div>
               </div>
+                            <div class="col-md-4">
+                              <label for="type" class="form-label"> Quel type de bien est ce ? </label>
+                              <select class="form-select" id="type" required name="type">
+                                <option value="">Choisissez...</option>
+                                <option>Maison</option>
+                                <option>Appartement</option>
+                              </select>
+                              <div class="invalid-feedback">
+                                Merci de sélectionner si votre projet concerne une maison ou un appartement
+                              </div>
+                            </div>
 
 
               <div class="col-md-4">
