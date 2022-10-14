@@ -1,6 +1,7 @@
 /data
 .ipynb_checkpoints
 .vscode
+api/.env
 __pycache__
 /api/pyris/scripts-data/download
 /api/pyris/scripts-data/data
