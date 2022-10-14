@@ -49,3 +49,23 @@ Project skeleton :
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
+
+
+## heroku production
+1. create an app on heroku website
+2. link the app to github repository
+3. activate automatic deploys
+4. create the file named Procfile (without extension) at project root and add :
+`web: uvicorn api.main:app --host=0.0.0.0 --port=${PORT:-5000}`
+4. add postgres addons
+`heroku addons:create heroku-postgresql:hobby-dev`
+5. create a dump of local postgres db
+  ` PGPASSWORD="password" pg_dump -h localhost -U "user" "db name" --no-owner --no-acl -f database.dump`
+6. upload dump db into prod db : DB_URI can be found into the settings of heroku postgres
+` heroku pg:psql "DB_URI" --app propertyestimatorsimplon < database.dump`
+7. attention point :
+be carrefull connection to your db must be done through environment variables thanks to that, you can modify this variable directly in Heroku in settings config vars
+ nowodays (october 2022 know issue with sql alchemy https://stackoverflow.com/questions/66690321/flask-and-heroku-sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy) forces us to change DB_uri name postgres to postgresql
+import and path must be setup from Procfile point of view
+ if local test app must be launch from root path:
+ `uvicorn api.main:app --reload`
