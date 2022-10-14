@@ -96,7 +96,7 @@ class ExternalApiCalls :
         engine = create_engine('postgresql://pierre:Hxjbvdzr@localhost/production'
                                , echo = True)
         df_stat = pd.read_sql_query(
-            f'SELECT * FROM "IRIS_INSEE" WHERE "IRIS" ={IRIS}::TEXT', con=engine)
+            f'SELECT * FROM iris_insee WHERE "IRIS" ={IRIS}::TEXT', con=engine)
         variables_to_keep = [ "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC",
             "P18_LOGVAC", "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P",
             "P18_RP_3P", "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2",
