@@ -69,3 +69,6 @@ be carrefull connection to your db must be done through environment variables th
 import and path must be setup from Procfile point of view
  if local test app must be launch from root path:
  `uvicorn api.main:app --reload`
+Don't forget to start postgresql database :)
+
+ git reset --soft HEAD~2
