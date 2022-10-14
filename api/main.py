@@ -52,32 +52,33 @@ async def home(request: Request):
 # champs optionnels en ajoutant None
 @app.post("/property")
 async def post_properties_feature(request: Request,
-                        nom: str = Form(...),
-                        prenom: str = Form(...),
-                        email: str = Form(...),
-                        addresse: str = Form(...),
-                        complement: str = Form(None),
-                        lieu : str = Form(...),
-                        commune: str = Form(...),
-                        code_postal: str = Form(...),
-                        nb_pieces_principales: float = Form(...),
-                        surface_reelle_bati: float = Form(...),
-                        surface_terrain: float = Form(...),
-                        Dependance: bool = Form(...),
-                        neuf : str = Form(...),
-                        terrain : str = Form(...)):
+                                  nom: str = Form(...),
+                                  prenom: str = Form(...),
+                                  email: str = Form(...),
+                                  addresse: str = Form(...),
+                                  complement: str = Form(None),
+                                  lieu: str = Form(...),
+                                  commune: str = Form(...),
+                                  code_postal: str = Form(...),
+                                  nb_pieces_principales: float = Form(...),
+                                  surface_reelle_bati: float = Form(...),
+                                  surface_terrain: float = Form(...),
+                                  Dependance: bool = Form(...),
+                                  type: str = Form(...),
+                                  neuf: str = Form(...),
+                                  terrain: str = Form(...)):
 
 
     df = ExternalApiCalls(addresse, complement, lieu, commune, code_postal,
                           nb_pieces_principales, surface_reelle_bati,
-                          surface_terrain, Dependance,
+                          surface_terrain, Dependance, 
                           terrain).call_api_addresse().call_api_pyris()
     iris = df.at[0, 'IRIS']
     df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
     #test_19_08  house_dep_model_aggregations_logement_act
     # 'test_21_08_linear_corrected.sav'
-    filename = "test_21_08_linear_corrected_minmax_20p.sav"
+    filename = "api/test_21_08_linear_corrected_minmax_20p.sav"
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
     result= int(round(result[0]))
