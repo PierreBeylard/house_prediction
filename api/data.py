@@ -1,5 +1,4 @@
 import pandas as pd
-import requests
 from sqlalchemy import create_engine
 
 class LoadingDataInDb:
@@ -9,16 +8,31 @@ class LoadingDataInDb:
     please enter table name as third argument
     """
 
-    def __init__(self, df, db_name, table_name, result):
+    def __init__(self, df, db_name, table_name, iris, result):
         self.df = df
         self.db_name = db_name
         self.table_name = table_name
+        self.iris = iris
         self.result = result
 
     def load_df_db(self):
         self.df['result']= self.result
+        self.df['iris']= self.iris
+        self.df['date_demande'] = pd.to_datetime("today")
         engine = create_engine(f'sqlite:///../data/{self.db_name}.sqlite',
                                echo=True)  # pass your db url
+        self.df.to_sql(name=self.table_name,
+                       con=engine,
+                       if_exists='append',
+                       index=False)
+        engine.dispose()
+
+    def load_df_db_psql (self) :
+        self.df['result'] = self.result
+        self.df['iris'] = self.iris
+        self.df['date_demande'] = pd.to_datetime("today")
+        engine = create_engine(f'postgresql://pierre:Hxjbvdzr@localhost/{self.db_name}',
+                                   echo=True)  # pass your db url
         self.df.to_sql(name=self.table_name,
                        con=engine,
                        if_exists='append',

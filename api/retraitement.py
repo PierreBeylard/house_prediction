@@ -85,11 +85,14 @@ class PrepareReceivedData:
         self.df["Taux_RP_AM04"] = self.df["P18_MEN_ANEM0204"]/self.df["P18_RP"]
         self.df["Taux_RP_AM09"] = self.df["P18_MEN_ANEM0509"]/self.df["P18_RP"]
         self.df["Taux_RP_AM09P"] = self.df["P18_MEN_ANEM10P"]/self.df["P18_RP"]
-        self.df =self.df.drop(['LAB_IRIS','IRIS','P18_LOG', 'P18_RP', 'P18_RSECOCC', 'P18_LOGVAC', 'P18_MAISON', 'P18_APPART','P18_RP_1P',
-            'P18_RP_2P', 'P18_RP_3P', 'P18_RP_4P', 'P18_RP_5PP','P18_RP_M30M2', 'P18_RP_3040M2', 'P18_RP_4060M2',
-        'P18_RP_6080M2', 'P18_RP_80100M2', 'P18_RP_100120M2', 'P18_RP_120M2P','P18_RP_GARL','P18_RP_PROP',
-            'P18_RP_LOC', 'P18_RP_LOCHLMV','P18_RP_GRAT','P18_MEN_ANEM0002', 'P18_MEN_ANEM0204',
-        'P18_MEN_ANEM0509', 'P18_MEN_ANEM10P'], axis = 1)
+        self.df =self.df.drop(['LAB_IRIS','IRIS','P18_LOG', 'P18_RP', 'P18_RSECOCC',
+                               'P18_LOGVAC', 'P18_MAISON', 'P18_APPART','P18_RP_1P',
+                               'P18_RP_2P', 'P18_RP_3P', 'P18_RP_4P', 'P18_RP_5PP',
+                               'P18_RP_M30M2', 'P18_RP_3040M2', 'P18_RP_4060M2',
+                               'P18_RP_6080M2', 'P18_RP_80100M2', 'P18_RP_100120M2',
+                               'P18_RP_120M2P','P18_RP_GARL','P18_RP_PROP', 'P18_RP_LOC',
+                               'P18_RP_LOCHLMV','P18_RP_GRAT','P18_MEN_ANEM0002',
+                               'P18_MEN_ANEM0204','P18_MEN_ANEM0509', 'P18_MEN_ANEM10P'], axis = 1)
         return self
 
     def feature_generation (self):

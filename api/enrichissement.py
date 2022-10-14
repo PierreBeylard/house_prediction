@@ -89,36 +89,66 @@ class ExternalApiCalls :
         }
         self.df = pd.DataFrame(property_dict)
         self.df['IRIS'] = IRIS
-        variables_to_keep = [
-            "IRIS", "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC", "P18_LOGVAC",
-            "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P", "P18_RP_3P",
-            "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2", "P18_RP_3040M2",
-            "P18_RP_4060M2", "P18_RP_6080M2", "P18_RP_80100M2", "P18_RP_100120M2",
-            "P18_RP_120M2P", "P18_RP_GARL", "P18_RP_PROP", "P18_RP_LOC",
-            "P18_RP_LOCHLMV", "P18_RP_GRAT", "P18_MEN_ANEM0002",
-            "P18_MEN_ANEM0204", "P18_MEN_ANEM0509", "P18_MEN_ANEM10P"
-        ]
-        engine = create_engine('sqlite:///../data/house_pred_database.sqlite',
-                               echo=True)
+
+        # nouvelle version pour mise en prod :
+        # Connection à la base PostgreSQL production
+        # enlever le password en dur et le mettre dans un fichier config
+        engine = create_engine('postgresql://pierre:Hxjbvdzr@localhost/production'
+                               , echo = True)
         df_stat = pd.read_sql_query(
-            f'SELECT * FROM logements_stats WHERE IRIS= {IRIS}', con=engine)
-        df_stat = df_stat[variables_to_keep]
-        self.df = pd.concat([self.df, df_stat], axis=1)
-        df_stat = pd.read_sql_query(
-            f'SELECT * FROM activites_stat WHERE IRIS= {IRIS}', con=engine)
-        variables_to_keep = [
-            "IRIS", "P18_POP1564", "P18_POP1524", "P18_POP2554", "P18_POP5564",
+            f'SELECT * FROM "IRIS_INSEE" WHERE "IRIS" ={IRIS}::TEXT', con=engine)
+        variables_to_keep = [ "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC",
+            "P18_LOGVAC", "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P",
+            "P18_RP_3P", "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2",
+            "P18_RP_3040M2", "P18_RP_4060M2", "P18_RP_6080M2",
+            "P18_RP_80100M2", "P18_RP_100120M2", "P18_RP_120M2P",
+            "P18_RP_GARL", "P18_RP_PROP", "P18_RP_LOC", "P18_RP_LOCHLMV",
+            "P18_RP_GRAT", "P18_MEN_ANEM0002", "P18_MEN_ANEM0204",
+            "P18_MEN_ANEM0509", "P18_MEN_ANEM10P", "P18_POP1564",
+            "P18_POP1524", "P18_POP2554", "P18_POP5564",
             "P18_ACT1564", "P18_ACTOCC1564", "P18_CHOM1564", "C18_ACT1564",
             "C18_ACT1564_CS1", "C18_ACT1564_CS3", "C18_ACT1564_CS2",
             "C18_ACT1564_CS4", "C18_ACTOCC1564", "C18_ACTOCC1564_CS1",
             "C18_ACTOCC1564_CS2", "C18_ACTOCC1564_CS3", "C18_ACTOCC1564_CS4",
             "P18_ACTOCC15P_ILT1", "C18_ACTOCC15P", "C18_ACTOCC15P_PAS",
             "C18_ACTOCC15P_MAR", "C18_ACTOCC15P_VELO", "C18_ACTOCC15P_2ROUESMOT",
-            "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"
-        ]
+            "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"]
         df_stat = df_stat[variables_to_keep]
         self.df = pd.concat([self.df, df_stat], axis=1)
         return self.df
+
+        # Anciene version -connection à sqlite sur chaque table :
+        # variables_to_keep = [
+        #     "IRIS", "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC",
+        #     "P18_LOGVAC", "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P",
+        #     "P18_RP_3P", "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2",
+        #     "P18_RP_3040M2", "P18_RP_4060M2", "P18_RP_6080M2",
+        #     "P18_RP_80100M2", "P18_RP_100120M2", "P18_RP_120M2P",
+        #     "P18_RP_GARL", "P18_RP_PROP", "P18_RP_LOC", "P18_RP_LOCHLMV",
+        #     "P18_RP_GRAT", "P18_MEN_ANEM0002", "P18_MEN_ANEM0204",
+        #     "P18_MEN_ANEM0509", "P18_MEN_ANEM10P"
+        # ]
+        # engine = create_engine('sqlite:///../data/house_pred_database.sqlite'
+        #                        , echo=True)
+        # df_stat = pd.read_sql_query(
+        #     f'SELECT * FROM logements_stats WHERE IRIS= {IRIS}', con=engine)
+        # df_stat = df_stat[variables_to_keep]
+        # self.df = pd.concat([self.df, df_stat], axis=1)
+        # df_stat = pd.read_sql_query(
+        #     f'SELECT * FROM activites_stat WHERE IRIS= {IRIS}', con=engine)
+        # variables_to_keep = [
+        #     "IRIS", "P18_POP1564", "P18_POP1524", "P18_POP2554", "P18_POP5564",
+        #     "P18_ACT1564", "P18_ACTOCC1564", "P18_CHOM1564", "C18_ACT1564",
+        #     "C18_ACT1564_CS1", "C18_ACT1564_CS3", "C18_ACT1564_CS2",
+        #     "C18_ACT1564_CS4", "C18_ACTOCC1564", "C18_ACTOCC1564_CS1",
+        #     "C18_ACTOCC1564_CS2", "C18_ACTOCC1564_CS3", "C18_ACTOCC1564_CS4",
+        #     "P18_ACTOCC15P_ILT1", "C18_ACTOCC15P", "C18_ACTOCC15P_PAS",
+        #     "C18_ACTOCC15P_MAR", "C18_ACTOCC15P_VELO", "C18_ACTOCC15P_2ROUESMOT",
+        #     "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"
+        # ]
+        # df_stat = df_stat[variables_to_keep]
+        # self.df = pd.concat([self.df, df_stat], axis=1)
+        # return self.df
 
 
 class FraisCalculation :

@@ -66,11 +66,11 @@ async def post_properties_feature(request: Request,
                           nb_pieces_principales, surface_reelle_bati,
                           surface_terrain, Dependance,
                           terrain).call_api_addresse().call_api_pyris()
-
+    iris = df.at[0, 'IRIS']
     df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
     ).columns_featuring_log().feature_generation()
     #test_19_08  house_dep_model_aggregations_logement_act
-   # 'test_21_08_linear_corrected.sav'
+    # 'test_21_08_linear_corrected.sav'
     filename = "test_21_08_linear_corrected_minmax_20p.sav"
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
@@ -78,7 +78,8 @@ async def post_properties_feature(request: Request,
     low_result = int(round(result - (result*10/100)))
     high_result = int(round(result + (result*10/100)))
 
-    LoadingDataInDb(df, 'house_pred_database', 'demands', result).load_df_db()
+    LoadingDataInDb(df, 'production', 'demands',iris,
+                    result).load_df_db_psql()
 
     frais_notaire_low, frais_notaire, frais_notaire_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_notaires()
