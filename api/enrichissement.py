@@ -5,8 +5,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-DATABASE_URL = os.getenv('DB_STRING')
-DB_NAME = os.getenv('DB_NAME')
+DATABASE_URL = os.environ.get('DB_STRING')
+DB_NAME = os.environ.get('DB_NAME')
 
 
 class ExternalApiCalls :
