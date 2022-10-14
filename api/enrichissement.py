@@ -26,6 +26,7 @@ class ExternalApiCalls :
         self.surface_reelle_bati = surface_reelle_bati
         self.surface_terrain = surface_terrain
         self.Dependance = Dependance
+#        self.type = type
         self.terrain = terrain
 
     def call_api_addresse (self) :
@@ -83,6 +84,8 @@ class ExternalApiCalls :
                     f'{url}').json()['records'][0]['fields']['iris_code']
             except:
                 IRIS = 'not found'
+        # if self.Dependance == True :
+        #     self.type = self.type + ' with dependance'
         property_dict = {
             'type_de_voie': [self.type_de_voie],
             'clean_code_departement': [self.clean_code_departement],
@@ -92,6 +95,7 @@ class ExternalApiCalls :
             'surface_reelle_bati': [self.surface_reelle_bati],
             'nb_pieces_principales': [self.nb_pieces_principales],
             'Dependance': [self.Dependance],
+#            'multi_locaux_clean' : [self.type],
             'main_type_terrain': [self.terrain]
         }
         self.df = pd.DataFrame(property_dict)
