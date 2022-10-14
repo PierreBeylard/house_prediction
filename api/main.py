@@ -30,9 +30,12 @@ app.add_middleware(
 )
 
 
-@app.get('/')
+@app.get('/', response_class=HTMLResponse)
 async def get_root():
-    return {'message': 'Welcome to the real estate evaluation app'}
+    info = {"page": "ceci est importé dans le script html par data.page"}
+    return templates.TemplateResponse(
+        "cover.html", context={"request":info})
+
 
 @app.get("/property", response_class=HTMLResponse)
 async def home(request: Request):
