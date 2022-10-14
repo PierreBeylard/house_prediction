@@ -4,9 +4,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import requests
 import pandas as pd
-from retraitement import PrepareReceivedData
-from data import LoadingDataInDb
-from enrichissement import ExternalApiCalls, FraisCalculation
+from .retraitement import PrepareReceivedData
+from .data import LoadingDataInDb
+from .enrichissement import ExternalApiCalls, FraisCalculation
 import pickle
 
 
