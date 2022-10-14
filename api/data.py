@@ -1,5 +1,10 @@
 import pandas as pd
 from sqlalchemy import create_engine
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+DATABASE_URL = os.getenv('DB_STRING')
 
 class LoadingDataInDb:
     """ class helping to load data into a database
@@ -31,8 +36,8 @@ class LoadingDataInDb:
         self.df['result'] = self.result
         self.df['iris'] = self.iris
         self.df['date_demande'] = pd.to_datetime("today")
-        engine = create_engine(f'postgresql://pierre:Hxjbvdzr@localhost/{self.db_name}',
-                                   echo=True)  # pass your db url
+        engine = create_engine(f'{DATABASE_URL}{self.db_name}',
+                               echo=True)  # pass your db url
         self.df.to_sql(name=self.table_name,
                        con=engine,
                        if_exists='append',

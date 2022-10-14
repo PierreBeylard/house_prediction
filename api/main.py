@@ -4,10 +4,12 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import requests
 import pandas as pd
-from .retraitement import PrepareReceivedData
-from .data import LoadingDataInDb
-from .enrichissement import ExternalApiCalls, FraisCalculation
+# attention en local les points avant les imports ne fonctionnent pas (marche pour la prod)
+from retraitement import PrepareReceivedData
+from data import LoadingDataInDb
+from enrichissement import ExternalApiCalls, FraisCalculation
 import pickle
+
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,9 +17,10 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 # parametrages pour préciser que le template html est dans le directory template et
 #le template css est dans le directory static
-templates = Jinja2Templates(directory="./templates")
+# enlever un des deux points pour la mise en prod car lancé par procfile depuis la racine du dossier
+templates = Jinja2Templates(directory="../templates")
 # mount directory under /static path. # Access to static files in your html need to use static prefix
-app.mount("/static", StaticFiles(directory="./static"), name="static")
+app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 
 # Ajout de cette méthode pour gérer l'erreur d'accessibilité 'access-control-allow-origin'

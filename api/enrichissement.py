@@ -2,11 +2,12 @@ import requests
 import pandas as pd
 from sqlalchemy import create_engine
 import os
+from dotenv import load_dotenv
 
-import psycopg2
-DATABASE_URL = os.environ.get('DB_STRING')
-con = psycopg2.connect(DATABASE_URL)
-cur = con.cursor()
+load_dotenv()
+DATABASE_URL = os.getenv('DB_STRING')
+DB_NAME = os.getenv('DB_NAME')
+
 
 class ExternalApiCalls :
     """external calls to :
@@ -99,10 +100,9 @@ class ExternalApiCalls :
         # nouvelle version pour mise en prod :
         # Connection à la base PostgreSQL production
         # enlever le password en dur et le mettre dans un fichier config
-        engine = create_engine('SQLALCHEMY_DATABASE_URI'
-                               , echo = False)
+        engine = create_engine(f'{DATABASE_URL}{DB_NAME}', echo=False)
         df_stat = pd.read_sql_query(
-            f'SELECT * FROM iris_insee WHERE "IRIS" ={IRIS}::TEXT', con=con)
+            f'SELECT * FROM iris_insee WHERE "IRIS" ={IRIS}::TEXT', con=engine)
         variables_to_keep = [ "LAB_IRIS", "P18_LOG", "P18_RP", "P18_RSECOCC",
             "P18_LOGVAC", "P18_MAISON", "P18_APPART", "P18_RP_1P", "P18_RP_2P",
             "P18_RP_3P", "P18_RP_4P", "P18_RP_5PP", "P18_RP_M30M2",
