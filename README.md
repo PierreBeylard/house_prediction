@@ -40,6 +40,7 @@ Project skeleton :
 └├──── Model.ipynb
 ├── static :
 └├──── form-validation.js
+└├──── form-validation.css                   
 └├──── logo.png
 └├──── proprieté.png
 └├──── cover.css
@@ -48,10 +49,11 @@ Project skeleton :
 └├──── cover.html
 ├── .gitignore
 ├── README.md
+├── Procfile
 ├── requirements.txt
 
 
-## heroku production
+## Heroku production
 Best is tu use heroku CLI to have access to logs :
 `heroku logs --tail `
 1. create an app on heroku website
@@ -79,8 +81,7 @@ Best is tu use heroku CLI to have access to logs :
     4.  `git add .gitattributes`
     5. classique steps : `git add file.pickle`, `git commit -m "Add design file"`, `git push origin master`
 Unfortunetely, heroku does not support git lfs natively
-
 Some extra steps have to be executed before using the file in Heroku :
-    1. Create a personnal access token for github accouut
-    2. Add heroku buildpack for Git-LFS `heroku buildpacks:add (buildpack_git_lfs_location) -a (your_heroku_app_name)
-    3. Add configuration variable to heroku app : HEROKU_BUILDPACK_GIT_LFS_REPO with value github repo
+  1. Create a personnal access token for github accouut
+  2. Add heroku buildpack for Git-LFS `heroku buildpacks:add (buildpack_git_lfs_location) -a (your_heroku_app_name)
+  3. Add configuration variable to heroku app : HEROKU_BUILDPACK_GIT_LFS_REPO with value github repo
