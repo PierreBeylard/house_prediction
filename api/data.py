@@ -4,7 +4,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-DATABASE_URL = os.getenv('DB_STRING')
+DATABASE_URL = os.environ.get('DB_STRING')
+DATABASE_NAME = os.environ.get('DB_NAME')
 
 class LoadingDataInDb:
     """ class helping to load data into a database
@@ -24,7 +25,7 @@ class LoadingDataInDb:
         self.df['result']= self.result
         self.df['iris']= self.iris
         self.df['date_demande'] = pd.to_datetime("today")
-        engine = create_engine(f'sqlite:///../data/{self.db_name}.sqlite',
+        engine = create_engine(f'sqlite:///../data/{DATABASE_NAME}.sqlite',
                                echo=True)  # pass your db url
         self.df.to_sql(name=self.table_name,
                        con=engine,
@@ -36,7 +37,7 @@ class LoadingDataInDb:
         self.df['result'] = self.result
         self.df['iris'] = self.iris
         self.df['date_demande'] = pd.to_datetime("today")
-        engine = create_engine(f'{DATABASE_URL}{self.db_name}',
+        engine = create_engine(f'{DATABASE_URL}{DATABASE_NAME}',
                                echo=True)  # pass your db url
         self.df.to_sql(name=self.table_name,
                        con=engine,
