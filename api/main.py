@@ -71,7 +71,7 @@ async def post_properties_feature(request: Request,
 
     df = ExternalApiCalls(addresse, complement, lieu, commune, code_postal,
                           nb_pieces_principales, surface_reelle_bati,
-                          surface_terrain, Dependance, 
+                          surface_terrain, Dependance,
                           terrain).call_api_addresse().call_api_pyris()
     iris = df.at[0, 'IRIS']
     df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
@@ -92,7 +92,6 @@ async def post_properties_feature(request: Request,
         low_result, result, high_result, neuf).frais_notaires()
     frais_agence_low, frais_agence, frais_agence_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_agence()
-
     return templates.TemplateResponse("index.html",
                                       context={
                                           'request': request,
@@ -111,3 +110,4 @@ async def post_properties_feature(request: Request,
                                            'frais_agence':frais_agence,
                                             'frais_agence_high':frais_agence_high
                                       })
+    

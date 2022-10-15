@@ -25,6 +25,7 @@ Data enrichment thanks to INSEE open data :
 
 Project skeleton :
 ├── API :
+
 └├──── main.py
 └├──── data.py
 └├──── enrichissement.py
@@ -40,7 +41,7 @@ Project skeleton :
 └├──── Model.ipynb
 ├── static :
 └├──── form-validation.js
-└├──── form-validation.css                   
+└├──── form-validation.css
 └├──── logo.png
 └├──── proprieté.png
 └├──── cover.css
@@ -81,7 +82,13 @@ Best is tu use heroku CLI to have access to logs :
     4.  `git add .gitattributes`
     5. classique steps : `git add file.pickle`, `git commit -m "Add design file"`, `git push origin master`
 Unfortunetely, heroku does not support git lfs natively
+
 Some extra steps have to be executed before using the file in Heroku :
-  1. Create a personnal access token for github accouut
+  1. GitHub has a whole guide here on how to get a token:
+    * Go to Settings > Developer Settings > Personal Access Tokens (here's a direct link)
+    * Click "Generate a New Token" and enter your password again. (here's another direct link)
+    * Set a description/name for it, check the "repo" permission and hit the "Generate token" button at the bottom of the page.
+    * Copy your new token before you leave the page
+
   2. Add heroku buildpack for Git-LFS `heroku buildpacks:add (buildpack_git_lfs_location) -a (your_heroku_app_name)
   3. Add configuration variable to heroku app : HEROKU_BUILDPACK_GIT_LFS_REPO with value github repo
