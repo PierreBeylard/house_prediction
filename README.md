@@ -52,6 +52,8 @@ Project skeleton :
 
 
 ## heroku production
+Best is tu use heroku CLI to have access to logs :
+`heroku logs --tail `
 1. create an app on heroku website
 2. link the app to github repository
 3. activate automatic deploys
@@ -63,12 +65,23 @@ Project skeleton :
   ` PGPASSWORD="password" pg_dump -h localhost -U "user" "db name" --no-owner --no-acl -f database.dump`
 6. upload dump db into prod db : DB_URI can be found into the settings of heroku postgres
 ` heroku pg:psql "DB_URI" --app propertyestimatorsimplon < database.dump`
-7. attention point :
-be carrefull connection to your db must be done through environment variables thanks to that, you can modify this variable directly in Heroku in settings config vars
- nowodays (october 2022 know issue with sql alchemy https://stackoverflow.com/questions/66690321/flask-and-heroku-sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy) forces us to change DB_uri name postgres to postgresql
-import and path must be setup from Procfile point of view
- if local test app must be launch from root path:
+7. Attention points :
+ * Be carrefull connection to your db must be done through environment variables thanks to that, you can modify this variable directly in Heroku in settings config vars
+ * Nowodays (october 2022 know issue with sql alchemy https://stackoverflow.com/questions/66690321/flask-and-heroku-sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy) forces us to change DB_uri name postgres to postgresql
+ * Import and path must be setup from Procfile point of view. If so, local test app must be launch from root path:
  `uvicorn api.main:app --reload`
-Don't forget to start postgresql database :)
+* Don't forget to start postgresql database when running local test :)
+ `sudo service postgresql start`
+* Large file heroku & git. It is possible to upload large file on Github using git LFS (with some limitation):
+    1. dowload setup git lfs - https://git-lfs.github.com./
+    2. install : `git lfs install`
+    3. track large files with extension : `git lfs track "*.pickle"`
+    4.  `git add .gitattributes`
+    5. classique steps : `git add file.pickle`, `git commit -m "Add design file"`, `git push origin master`
+Unfortunetely, heroku does not support git lfs natively
+Some extra steps have to be executed before using the file in Heroku :
+    1. Create a personnal access token for github accouut
+    2. Add heroku buildpack for Git-LFS `heroku buildpacks:add (buildpack_git_lfs_location) -a (your_heroku_app_name)
+    3. Add configuration variable to heroku app : HEROKU_BUILDPACK_GIT_LFS_REPO with value github repo
 
- git reset --soft HEAD~2
+ |git reset --soft HEAD~2
