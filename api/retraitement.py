@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import numpy as np
 
 from sklearn.impute import KNNImputer
@@ -22,6 +22,81 @@ class PrepareReceivedData:
             self.df.at[0, 'main_type_terrain'] = 'AB'
         else :
             self.df['main_type_terrain'] = 'S'
+        return self
+
+    def v2_agregates (self):
+        def aggregate(a, b):
+            return a / b if b != 0 else 0
+        #activite
+        self.df['Taux_P_ActOct'] =list(map(aggregate, self.df['P18_ACTOCC1564'], self.df['P18_POP']))
+        self.df['Taux_P_CHO'] = list(map(aggregate, self.df['P18_CHOM1564'], self.df['P18_ACT1564']))
+        self.df['Taux_CS1'] = list(map(aggregate, self.df['C18_ACT1564_CS1'], self.df['C18_ACT1564']))
+        self.df['Taux_CS3'] = list(
+            map(aggregate, self.df['C18_ACT1564_CS3'], self.df['C18_ACT1564']))
+        self.df['Taux_CS6'] = list(
+            map(aggregate, self.df['C18_ACT1564_CS6'], self.df['C18_ACT1564']))
+        self.df['Taux_TT'] = list(
+            map(aggregate, self.df['C18_ACTOCC15P_PAS'],
+                self.df['C18_ACTOCC15P']))
+        self.df['Taux_TCOM'] = list(map(aggregate, self.df['C18_ACTOCC15P_TCOM'], self.df['C18_ACTOCC15P']))
+        self.df['Taux_5564'] = list(map(aggregate, self.df['P18_POP5564'], (self.df['P18_POP1564'])))
+        try :
+            self.df['emmenagement_moyen'] = round(
+                (self.df['P18_MEN_ANEM0002'] + self.df['P18_MEN_ANEM0204'] * 3 +
+                self.df['P18_MEN_ANEM0509'] * 7.5 +
+                self.df['P18_MEN_ANEM10P'] * 10) / self.df['P18_PMEN'])
+        except :
+            self.df['emmenagement_moyen'] = (self.df['P18_MEN_ANEM0002'] + self.df['P18_MEN_ANEM0204'] * 3
+                                             + self.df['P18_MEN_ANEM0509'] * 7.5
+                                             + self.df['P18_MEN_ANEM10P'] * 10) / self.df['P18_PMEN']
+        ##logement
+        self.df['Taux_RP'] = list(
+            map(aggregate, self.df['P18_RP'], self.df['P18_LOG']))
+        self.df['Taux_LV'] = list(map(aggregate, self.df['P18_LOGVAC'],self.df['P18_LOG']))
+        self.df['Taux_MAI'] = list(map(aggregate, self.df['P18_MAISON'], self.df['P18_LOG']))
+        self.df['Taux_RP_LOC'] = list(
+            map(aggregate, self.df['P18_RP_LOC'], self.df['P18_RP']))
+        try :
+            self.df['superficie_moyennes_rp']= round((self.df['P18_RP_M30M2']*30
+                                     + self.df['P18_RP_3040M2']*35
+                                     + self.df['P18_RP_4060M2']*50
+                                     + self.df[ 'P18_RP_6080M2']*70
+                                     + self.df[ 'P18_RP_80100M2']*90
+                                     + self.df['P18_RP_100120M2']*110
+                                     + self.df['P18_RP_120M2P']*120)
+                                     / self.df['P18_RP'])
+        except :
+            self.df['superficie_moyennes_rp']= (self.df['P18_RP_M30M2']*30
+                                     + self.df['P18_RP_3040M2']*35
+                                     + self.df['P18_RP_4060M2']*50
+                                     + self.df[ 'P18_RP_6080M2']*70
+                                     + self.df[ 'P18_RP_80100M2']*90
+                                     + self.df['P18_RP_100120M2']*110
+                                     + self.df['P18_RP_120M2P']*120)/ self.df['P18_RP']
+        try :
+            self.df['age_moyen_logement']= round((self.df[ 'P18_RP_ACH19']*1919
+                                 + self.df['P18_RP_ACH45']*(1919 +((1945-1919)/2))
+                                 + self.df['P18_RP_ACH70']*(1945 +((1970-1945)/2))
+                                 + self.df[ 'P18_RP_ACH90']*(1970+((1990-1970)/2))
+                                 + self.df[ 'P18_RP_ACH05']*(1990+((2005-1990)/2))
+                                 + self.df['P18_RP_ACH15']*(2005+((2015-2005)/2)))
+                                                 / self.df['P18_RP_ACHTOT'])
+        except :
+            self.df['age_moyen_logement']= (self.df[ 'P18_RP_ACH19']*1919
+                                 + self.df['P18_RP_ACH45']*(1919 +((1945-1919)/2))
+                                 + self.df['P18_RP_ACH70']*(1945 +((1970-1945)/2))
+                                 + self.df[ 'P18_RP_ACH90']*(1970+((1990-1970)/2))
+                                 + self.df[ 'P18_RP_ACH05']*(1990+((2005-1990)/2))
+                                 + self.df['P18_RP_ACH15']*(2005+((2015-2005)/2)))/ self.df['P18_RP_ACHTOT']
+        self.df['anciennete'] = abs(self.df['age_moyen_logement'] -date.today().year)
+        self.df = self.df[[
+            'clean_code_commune', 'nb_pieces_principales', 'Taux_CS1',
+            'Taux_CS3', 'Taux_CS6', 'densite_pop', 'nb_pieces_moyen',
+            'Taux_RP', 'Taux_LV', 'Taux_MAI', 'Taux_RP_LOC',
+            'superficie_moyennes_rp', 'anciennete', 'emmenagement_moyen',
+            'Taux_5564', 'Taux_P_ActOct', 'Taux_P_CHO', 'Taux_TT', 'Taux_TCOM',
+            'type_de_voie'
+        ]]
         return self
 
     def columns_featuring_act (self) :
@@ -97,7 +172,7 @@ class PrepareReceivedData:
 
     def feature_generation (self):
         # convert the 'Date' column to datetime format
-        self.df["month"] =  str(datetime.now().month)
+        # self.df["month"] =  str(datetime.now().month)
         ## attention à ne faire qu'après avoir enrichi avec variables insee
         type_voie_list=['VOIE', 'TRA', 'FG', 'DOM', 'COUR', 'COTE', 'PROM', 'CHS', 'PTR',
         'PARC', 'QUA', 'CR', 'VEN', 'CAMI', 'VGE', 'COR', 'N', 'MAIL',
@@ -114,7 +189,7 @@ class PrepareReceivedData:
             self.df["type_de_voie"] = "Autres"
         self.df["type_de_voie"]= self.df["type_de_voie"].replace(np.nan,"vide")
         ## correted directly inside train dataset :)
-#        self.df["clean_code_commune"] = [c[3:].zfill(3) for c in  self.df["clean_code_commune"]]
+        #        self.df["clean_code_commune"] = [c[3:].zfill(3) for c in  self.df["clean_code_commune"]]
         return self.df
 
 ## to delete, included in model

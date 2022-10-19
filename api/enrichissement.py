@@ -26,7 +26,7 @@ class ExternalApiCalls :
         self.surface_reelle_bati = surface_reelle_bati
         self.surface_terrain = surface_terrain
         self.Dependance = Dependance
-#        self.type = type
+        #        self.type = type
         self.terrain = terrain
 
     def call_api_addresse (self) :
@@ -95,7 +95,7 @@ class ExternalApiCalls :
             'surface_reelle_bati': [self.surface_reelle_bati],
             'nb_pieces_principales': [self.nb_pieces_principales],
             'Dependance': [self.Dependance],
-#            'multi_locaux_clean' : [self.type],
+        #            'multi_locaux_clean' : [self.type],
             'main_type_terrain': [self.terrain]
         }
         self.df = pd.DataFrame(property_dict)
@@ -126,10 +126,14 @@ class ExternalApiCalls :
             "C18_ACTOCC1564_CS2", "C18_ACTOCC1564_CS3", "C18_ACTOCC1564_CS4",
             "P18_ACTOCC15P_ILT1", "C18_ACTOCC15P", "C18_ACTOCC15P_PAS",
             "C18_ACTOCC15P_MAR", "C18_ACTOCC15P_VELO", "C18_ACTOCC15P_2ROUESMOT",
-            "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM"]
+            "C18_ACTOCC15P_VOIT", "C18_ACTOCC15P_TCOM", "densite_pop", "nb_pieces_moyen"]
+        try :
+            self.nb_mutation_commune = df_stat['nb_mutations_communes'][0]
+        except :
+            self.nb_mutation_commune = 0
         df_stat = df_stat[variables_to_keep]
         self.df = pd.concat([self.df, df_stat], axis=1)
-        return self.df
+        return self.df, self.nb_mutation_commune
 
         # Anciene version -connection à sqlite sur chaque table :
         # variables_to_keep = [

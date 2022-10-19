@@ -149,6 +149,9 @@
               <div class="col-md-4">
                 <label for="zip" class="form-label">Code postal</label>
                 <input type="text" class="form-control" id="zip" placeholder="33000" required name="code_postal">
+                <!-- <label for="customRange3" class="form-label">Example range</label>
+                <input type="range" value "0" class="form-range" min="0" max="200" step="1" id="customRange3" oninput="this.nextElementSibling.value = this.value">
+                <output>0</output> -->
                 <div class="invalid-feedback">
                   Merci d'entrer un code postal valide.
                 </div>
@@ -304,7 +307,9 @@
               </div>
             </div>
           <div class="col-md-12">
-          <p>Pour rappel, vous avez demandé l'estimation d'un bien situé à {{commune}} d'une superficie de {{surface}} m² possédant {{pieces}} pièces principales (hors cuisine & SdB).</p>
+          <p> Pour rappel, vous avez demandé l'estimation d'un bien situé à {{commune}} d'une superficie de {{surface}} m² possédant {{pieces}} pièces principales (hors cuisine & SdB).
+             Ce bien dispose de {{terrain}} m² de terrain.</p>
+          <p> {{nb_mutation}} mutations ont été enregistrées sur cette commune l'an dernier.</p>
           <!-- <p> stats à ajouter nbre ventes communes, taux de chommages, répartition des biens(maison/appartements...)</p> -->
           {% endif %}
           </div>

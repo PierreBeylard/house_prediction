@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import requests
 import pandas as pd
-# attention en local les points avant les imports ne fonctionnent pas (marche pour la prod)
+# attention en local les points avant les imports ne fonctionnent que si on lance l'api depuis la racine du projet (marche pour la prod)
 from .retraitement import PrepareReceivedData
 from .data import LoadingDataInDb
 from .enrichissement import ExternalApiCalls, FraisCalculation
@@ -69,25 +69,34 @@ async def post_properties_feature(request: Request,
                                   terrain: str = Form(...)):
 
 
-    df = ExternalApiCalls(addresse, complement, lieu, commune, code_postal,
+    df, nb_mutation= ExternalApiCalls(addresse, complement, lieu, commune, code_postal,
                           nb_pieces_principales, surface_reelle_bati,
                           surface_terrain, Dependance,
                           terrain).call_api_addresse().call_api_pyris()
     iris = df.at[0, 'IRIS']
-    df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
-    ).columns_featuring_log().feature_generation()
+    #V1# df = PrepareReceivedData(df).dep_and_terrain().columns_featuring_act(
+    # ).columns_featuring_log().feature_generation()
+    #V2
+    df = PrepareReceivedData(df).dep_and_terrain().v2_agregates().feature_generation()
     #test_19_08  house_dep_model_aggregations_logement_act
     # 'test_21_08_linear_corrected.sav'
-    filename = "api/test_21_08_linear_corrected_minmax_20p.sav"
+    #V1#filename = "api/test_21_08_linear_corrected_minmax_20p.sav"
+    # V2
+    filename = "api/model.pkl"
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
-    result= int(round(result[0]))
+    if surface_terrain> surface_reelle_bati:
+        result = int(round((result[0]*surface_reelle_bati)+((result[0]*0.15)
+                                                            *(surface_terrain - surface_reelle_bati))))
+    else :
+        result= int(round(result[0]*surface_reelle_bati))
     low_result = int(round(result - (result*10/100)))
     high_result = int(round(result + (result*10/100)))
-
+    df['email'] = email
+    df['nom'] = nom
+    df['prenom'] = prenom
     LoadingDataInDb(df, 'production', 'demands',iris,
                     result).load_df_db_psql()
-
     frais_notaire_low, frais_notaire, frais_notaire_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_notaires()
     frais_agence_low, frais_agence, frais_agence_high = FraisCalculation(
@@ -98,7 +107,9 @@ async def post_properties_feature(request: Request,
                                           'result': result,
                                           'surface': surface_reelle_bati,
                                           'pieces': int(round(nb_pieces_principales)),
+                                          'terrain': int(round(surface_terrain)),
                                           'commune': commune,
+                                          'nb_mutation': nb_mutation,
                                           'low_result': low_result,
                                           'high_result': high_result,
                                           'frais_notaire_low':
@@ -110,4 +121,3 @@ async def post_properties_feature(request: Request,
                                            'frais_agence':frais_agence,
                                             'frais_agence_high':frais_agence_high
                                       })
-    
