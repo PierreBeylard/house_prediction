@@ -82,7 +82,7 @@ async def post_properties_feature(request: Request,
     # 'test_21_08_linear_corrected.sav'
     #V1#filename = "api/test_21_08_linear_corrected_minmax_20p.sav"
     # V2
-    filename = "api/model.pkl"
+    filename = "api/linear_reg_prix_m2_V2.pkl"
     loaded_model = pickle.load(open(filename, 'rb'))
     result=loaded_model.predict(df)
     if surface_terrain> surface_reelle_bati:
