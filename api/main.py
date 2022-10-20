@@ -95,8 +95,13 @@ async def post_properties_feature(request: Request,
     df['email'] = email
     df['nom'] = nom
     df['prenom'] = prenom
+    ######################## VERSION PROD #########################
+    # LoadingDataInDb(df, 'production', 'demands',iris,
+    #                 result).load_df_db_psql()
+    ######################## VERSION DEV #########################
     LoadingDataInDb(df, 'production', 'demands',iris,
-                    result).load_df_db_psql()
+                    result).load_df_db()
+
     frais_notaire_low, frais_notaire, frais_notaire_high = FraisCalculation(
         low_result, result, high_result, neuf).frais_notaires()
     frais_agence_low, frais_agence, frais_agence_high = FraisCalculation(

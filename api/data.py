@@ -25,7 +25,7 @@ class LoadingDataInDb:
         self.df['result']= self.result
         self.df['iris']= self.iris
         self.df['date_demande'] = pd.to_datetime("today")
-        engine = create_engine(f'sqlite:///../data/{DATABASE_NAME}.sqlite',
+        engine = create_engine(f'sqlite:///data/house_pred_database.sqlite',
                                echo=True)  # pass your db url
         self.df.to_sql(name=self.table_name,
                        con=engine,
