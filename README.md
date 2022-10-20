@@ -67,7 +67,7 @@ Best is tu use heroku CLI to have access to logs :
 5. create a dump of local postgres db
   ` PGPASSWORD="password" pg_dump -h localhost -U "user" "db name" --no-owner --no-acl -f database.dump`
 6. upload dump db into prod db : DB_URI can be found into the settings of heroku postgres
-` heroku pg:psql "DB_URI" --app propertyestimatorsimplon < database.dump`
+` heroku pg:psql DATABASE_URL--app propertyestimatorsimplon < database.dump`
 ##  Attention points :
  * Be carrefull connection to your db must be done through environment variables thanks to that, you can modify this variable directly in Heroku in settings config vars
  * Nowodays (october 2022 know issue with sql alchemy https://stackoverflow.com/questions/66690321/flask-and-heroku-sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy) forces us to change DB_uri name postgres to postgresql
